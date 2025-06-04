@@ -17,13 +17,20 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div id="mainPanel">
+    <div id="mainPanel" style="position: relative;">
+  <div id="cycleContainer" style="position: absolute; top: 5px; left: 5px; display: flex; gap: 5px;">
+    <div class="cycleDot"></div>
+    <div class="cycleDot"></div>
+    <div class="cycleDot"></div>
+    <div class="cycleDot"></div>
+  </div>
   <div id="timer">25:00</div>
   <button id="startButton">Start Work</button>
 
   <div class="modeGroup">
     <label for="taskMode">What are you working on?</label>
     <select id="taskMode">
+        <option value="lit_review">Literature Review</option>
       <option value="cleaning">Data Cleaning</option>
       <option value="analysis">Analysis</option>
       <option value="writing">Writing</option>
@@ -32,10 +39,13 @@
     <p id="modeReminder">Focus on cleaning your data!</p>
   </div>
 
+<div id="topRightControls">
+  <button id="pauseResumeButton">⏸️ Pause</button>
+  <button id="toggleModeButton">🔁 Toggle Break/Work</button>
+</div>
   <div>
     <img id="catImage" src="assets/cat_sleeping.gif" alt="Cat Sleeping" />
   </div>
-
   <div id="sessionChecklist">
     <h3>Today's Tasks</h3>
     <form id="newTaskForm">
@@ -53,11 +63,29 @@
   </div>
 </div>
 
+  <!-- Game Canvas Container (hidden by default) -->
+<div id="catGameContainer" style="display: none;">
+  <canvas id="catGameCanvas" width="800" height="200"></canvas>
+  <div id="gameStats"></div>
+</div>
+
+<!-- Play Game Button -->
+<button id="playGameButton" style="position: fixed; bottom: 10px; right: 10px; display: none;">🎮 Play Mini Game</button>
+
+<style>
+  .cycleDot.filled {
+    background-color: white;
+  }
+</style>
+
+
   <!-- Motivation + Countdown -->
   <div id="motivationBar">
     <p id="motivationMessage">You've got this!</p>
     <p id="countdown"></p>
   </div>
+
+<div id="timeTrackerDisplay" style="margin-top: 5px; font-size: 0.9em;"></div>
 
   <!-- JS Logic -->
   <script src="script.js"></script>

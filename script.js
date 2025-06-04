@@ -29,6 +29,17 @@ function updateCountdown() {
 updateCountdown();
 setInterval(updateCountdown, 1000 * 60 * 60);
 
+function updateCycleIndicator() {
+  const dots = document.querySelectorAll(".cycleDot");
+  dots.forEach((dot, index) => {
+    if (index < sessionCount % 4) {
+      dot.classList.add("filled");
+    } else {
+      dot.classList.remove("filled");
+    }
+  });
+}
+
 // Pomodoro config
 const WORK_DURATION = 25 * 60;
 const BREAK_DURATION = 5 * 60;
@@ -39,18 +50,167 @@ let timeRemaining = WORK_DURATION;
 let timerRunning = false;
 let intervalID = null;
 let sessionCount = 0;
+let isPaused = false;
+
+
+document.getElementById("pauseResumeButton").addEventListener("click", () => {
+  if (!timerRunning) return;
+
+  isPaused = !isPaused;
+  document.getElementById("pauseResumeButton").textContent = isPaused ? "▶️ Resume" : "⏸️ Pause";
+});
+
+document.getElementById("toggleModeButton").addEventListener("click", () => {
+  clearInterval(intervalID);
+  timerRunning = false;
+  isPaused = false;
+  document.getElementById("pauseResumeButton").textContent = "⏸️ Pause";
+  startButton.disabled = false;
+
+  switchMode();
+  updateDisplay();
+});
+
+startButton.addEventListener("click", startTimer);
+
+let gameInterval;
+let lives = 9;
+let coins = 0;
+let gameRunning = false;
+const canvas = document.getElementById("catGameCanvas");
+const ctx = canvas.getContext("2d");
+const statsDisplay = document.getElementById("gameStats");
+
+const cat = { x: 50, y: 150, width: 30, height: 30, dy: 0, jumping: false };
+const obstacles = [];
+const powerUps = [];
+const gravity = 0.8;
+
+function startCatGame() {
+  if (gameRunning || isWorking) return;
+
+  document.getElementById("catGameContainer").style.display = "block";
+  lives = 9;
+  coins = 0;
+  obstacles.length = 0;
+  powerUps.length = 0;
+  cat.y = 150;
+  cat.dy = 0;
+  gameRunning = true;
+  gameInterval = setInterval(updateGame, 1000 / 60);
+}
+
+function stopCatGame() {
+  clearInterval(gameInterval);
+  gameRunning = false;
+  document.getElementById("catGameContainer").style.display = "none";
+}
+
+function drawRect(obj, color) {
+  ctx.fillStyle = color;
+  ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
+}
+
+function updateGame() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  cat.dy += gravity;
+  cat.y += cat.dy;
+  if (cat.y >= 150) {
+    cat.y = 150;
+    cat.dy = 0;
+    cat.jumping = false;
+  }
+  drawRect(cat, "#fbc531");
+
+  if (Math.random() < 0.01) {
+    const height = 30 + Math.random() * 20;
+    obstacles.push({ x: 800, y: 200 - height, width: 20, height });
+  }
+  obstacles.forEach((ob, i) => {
+    ob.x -= 2.5;
+    drawRect(ob, "red");
+    if (checkCollision(cat, ob)) {
+      lives--;
+      obstacles.splice(i, 1);
+      if (lives <= 0) {
+        stopCatGame();
+        alert("Game over! Your cat used all 9 lives!");
+      }
+    }
+  });
+
+  if (Math.random() < 0.01) {
+    powerUps.push({ x: 800, y: 140, width: 20, height: 20 });
+  }
+  powerUps.forEach((pu, i) => {
+    pu.x -= 4;
+    drawRect(pu, "blue");
+    if (checkCollision(cat, pu)) {
+      coins += 1;
+      powerUps.splice(i, 1);
+    }
+  });
+
+  statsDisplay.textContent = `Lives: ${lives} | Coins: ${coins}`;
+}
+
+function checkCollision(a, b) {
+  return a.x < b.x + b.width &&
+         a.x + a.width > b.x &&
+         a.y < b.y + b.height &&
+         a.y + a.height > b.y;
+}
+
+window.addEventListener("keydown", (e) => {
+  if (e.code === "Space" && !cat.jumping) {
+    cat.dy = -14;
+    cat.jumping = true;
+  }
+});
+
+document.getElementById("playGameButton").addEventListener("click", () => {
+  if (!gameRunning) startCatGame();
+});
+
+function switchMode() {
+  isWorking = !isWorking;
+
+  if (isWorking) {
+    sessionCount++;
+    timeRemaining = WORK_DURATION;
+    stopCatGame();
+    document.getElementById("playGameButton").style.display = "none";
+  } else {
+    timeRemaining = (sessionCount > 0 && sessionCount % 4 === 0)
+      ? LONG_BREAK_DURATION
+      : BREAK_DURATION;
+    // Don't start game here — wait for user to press button
+    document.getElementById("playGameButton").style.display = "block";
+  }
+
+  updateCatImage();
+  updateButtonLabel();
+  updateCycleIndicator();
+
+  if (isWorking) workSound.play();
+  else breakSound.play();
+}
+
+updateCycleIndicator();
 
 const reminders = {
   cleaning: "Focus on cleaning your data!",
   analysis: "Keep digging into those patterns!",
   writing: "Just write. Even badly. Edit later.",
-  editing: "Tighten those arguments and smooth the flow!"
+  editing: "Tighten those arguments and optimise the flow!"
 };
 
 modeReminder.textContent = reminders[taskModeSelect.value];
 
 let modeTimeTracker = {
   cleaning: 0,
+  litreview: 0,
   analysis: 0,
   writing: 0,
   editing: 0
@@ -67,38 +227,6 @@ const writingGoals = {
 
 let userWordCounts = {};
 Object.keys(writingGoals).forEach(section => userWordCounts[section] = 0);
-
-// Chart.js setup
-let chart;
-function updateWordProgress() {
-  const container = document.getElementById("wordChart");
-  container.innerHTML = "";
-
-  Object.entries(writingGoals).forEach(([section, target]) => {
-    const actual = userWordCounts[section] || 0;
-
-    const row = document.createElement("div");
-    row.style.margin = "8px 0";
-
-    const label = document.createElement("span");
-    label.textContent = `${section}: ${actual} / ${target} `;
-
-    const visual = document.createElement("span");
-    if (actual > target) {
-      visual.textContent = "💥 Over limit!";
-    } else {
-      const percent = actual / target;
-      const filled = Math.round(percent * 5);
-      const empty = 5 - filled;
-      visual.textContent = "❤️".repeat(filled) + "🖤".repeat(empty);
-    }
-
-    row.appendChild(label);
-    row.appendChild(visual);
-    container.appendChild(row);
-  });
-}
-
 
 function formatTime(seconds) {
   const minutes = Math.floor(seconds / 60);
@@ -119,23 +247,19 @@ function updateButtonLabel() {
   startButton.textContent = isWorking ? "Start Work" : "Start Break";
 }
 
-function switchMode() {
-  isWorking = !isWorking;
+function updateTimeTrackerDisplay() {
+  const tracker = document.getElementById("timeTrackerDisplay");
 
-  if (isWorking) {
-    sessionCount++;
-    timeRemaining = WORK_DURATION;
-  } else {
-    timeRemaining = sessionCount % 4 === 0 ? LONG_BREAK_DURATION : BREAK_DURATION;
-    alert(`Nice work! You completed ${completedThisSession} tasks this session.`);
-    completedThisSession = 0;
-  }
+  const formatMinutes = seconds => `${Math.floor(seconds / 60)} min`;
 
-  updateCatImage();
-  updateButtonLabel();
-
-  if (isWorking) workSound.play();
-  else breakSound.play();
+  tracker.innerHTML = `
+    <strong>Time Spent:</strong><br>
+    📚 Lit Review: ${formatMinutes(modeTimeTracker.litreview)}<br>
+    🧹 Cleaning: ${formatMinutes(modeTimeTracker.cleaning)}<br>
+    📊 Analysis: ${formatMinutes(modeTimeTracker.analysis)}<br>
+    ✍️ Writing: ${formatMinutes(modeTimeTracker.writing)}<br>
+    ✏️ Editing: ${formatMinutes(modeTimeTracker.editing)}
+  `;
 }
 
 function startTimer() {
@@ -145,15 +269,21 @@ function startTimer() {
   startButton.disabled = true;
 
   intervalID = setInterval(() => {
+    if (isPaused) return;
+
     timeRemaining--;
     updateDisplay();
 
     const currentMode = taskModeSelect.value;
     modeTimeTracker[currentMode] += 1;
+    updateTimeTrackerDisplay();
+
 
     if (timeRemaining <= 0) {
       clearInterval(intervalID);
       timerRunning = false;
+      sessionCount++;
+      updateCycleIndicator();
       switchMode();
       updateDisplay();
       startButton.disabled = false;
@@ -303,4 +433,3 @@ updateDisplay();
 updateCatImage();
 updateButtonLabel();
 renderTasks();
-startButton.addEventListener("click", startTimer);

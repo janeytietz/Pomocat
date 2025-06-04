@@ -47,6 +47,11 @@ h1, h3 {
   display: block;
 }
 
+#catGameContainer {
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.2);
+}
+
 #motivationBar {
   position: absolute;
   top: 10px;
@@ -103,8 +108,6 @@ select {
   width: 300px;
   margin-top: 20px;
   image-rendering: pixelated;
-  border: 2px solid #ffffff00;
-  box-shadow: 0 0 8px #fbc531;
 }
 
 #sessionChecklist {
@@ -120,6 +123,65 @@ select {
   margin-bottom: 10px;
   display: flex;
 }
+
+#topRightControls {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 999;
+}
+
+#topRightControls button {
+  background-color: #ffeaa7;
+  border: 2px solid #000;
+  font-family: 'Press Start 2P', cursive;
+  padding: 6px 10px;
+  margin-left: 6px;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+#cycleIndicator {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    gap: 5px;
+  }
+.cycleDot {
+  width: 10px;
+  height: 10px;
+  border: 2px solid white;
+  border-radius: 50%;
+}
+.cycleDot.filled {
+  background-color: white;
+}
+
+  .checklist li {
+    font-size: 1.1em;
+    padding: 8px;
+  }
+
+#playGameButton {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  padding: 10px 16px;
+  background-color: #fffbe6;
+  border: 2px solid #f39c12;
+  border-radius: 8px;
+  font-size: 14px;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+#playGameButton:hover {
+  transform: scale(1.05);
+}
+
 
 #newTaskInput {
   font-family: 'Press Start 2P', cursive;
@@ -159,14 +221,14 @@ select {
 }
 
 #checklist li {
+  font-size: 1.1em;
+  padding: 10px;
+  margin-bottom: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 6px;
-  background-color: #000;
-  border: 1px solid #fbc531;
-  padding: 4px;
-  cursor: grab;
+  align-items: center;
 }
 
 #checklist input[type="checkbox"] {
