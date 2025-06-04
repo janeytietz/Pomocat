@@ -286,4 +286,8 @@ select {
   background-color: #000;
   border: 1px solid #fbc531;
 }
+#wordChart div {
+  font-family: monospace;
+}
+
 

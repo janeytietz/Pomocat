@@ -196,6 +196,55 @@ function switchMode() {
   if (isWorking) workSound.play();
   else breakSound.play();
 }
+function updateWordProgress() {
+  const container = document.getElementById("wordChart");
+  container.innerHTML = "";
+
+  let totalWritten = 0;
+  let totalTarget = 0;
+
+  Object.entries(writingGoals).forEach(([section, target]) => {
+    const actual = userWordCounts[section] || 0;
+    totalWritten += actual;
+    totalTarget += target;
+
+    const row = document.createElement("div");
+    row.style.margin = "6px 0";
+
+    const label = document.createElement("span");
+    label.textContent = `${section}: ${actual} / ${target}`;
+    label.style.fontWeight = "bold";
+    label.style.color = actual > target ? "red" : "inherit";
+
+    row.appendChild(label);
+    container.appendChild(row);
+  });
+
+  // Progress bar
+  const barWrapper = document.createElement("div");
+  barWrapper.style.marginTop = "10px";
+  barWrapper.style.background = "#ddd";
+  barWrapper.style.borderRadius = "10px";
+  barWrapper.style.overflow = "hidden";
+  barWrapper.style.height = "20px";
+
+  const percent = Math.min((totalWritten / totalTarget) * 100, 100);
+  const bar = document.createElement("div");
+  bar.style.width = `${percent}%`;
+  bar.style.height = "100%";
+  bar.style.background = percent >= 100 ? "green" : "#4caf50";
+
+  barWrapper.appendChild(bar);
+  container.appendChild(barWrapper);
+
+  // Optional text under bar
+  const summary = document.createElement("div");
+  summary.style.fontSize = "0.9em";
+  summary.style.marginTop = "4px";
+  summary.textContent = `Total: ${totalWritten} / ${totalTarget} words`;
+
+  container.appendChild(summary);
+}
 
 updateCycleIndicator();
 
@@ -218,9 +267,9 @@ let modeTimeTracker = {
 
 const writingGoals = {
   Introduction: 500,
-  "Literature Review": 2000,
-  Methodology: 1500,
-  Results: 2000,
+  "Literature Review": 2500,
+  Methodology: 2000,
+  Results: 3000,
   Discussion: 1500,
   Conclusion: 500
 };
