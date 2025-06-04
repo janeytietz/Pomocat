@@ -1,0 +1,227 @@
+body {
+  background-image: url("assets/living_room.jpg");
+  background-size: cover; /* Scales to fill screen */
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
+  color: #ffffff;
+  font-family: 'Press Start 2P', cursive;
+  text-align: center;
+  padding: 40px;
+  margin: 0;
+}
+
+h1, h3 {
+  font-size: 14px;
+  color: #fbc531;
+}
+
+#mainPanel {
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: rgba(0, 0, 0, 0.6); /* semi-transparent black */
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 8px #000;
+}
+
+.modeGroup {
+  margin-top: 20px;
+}
+
+#timer {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+/* Center button and dropdown group */
+#startButton {
+  display: block;
+  margin: 0 auto 10px auto;
+}
+
+/* Adjust cat image size for consistency */
+#catImage {
+  width: 200px;
+  margin: 20px auto;
+  display: block;
+}
+
+#motivationBar {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 10px;
+  color: #fbc531;
+  text-align: left;
+  line-height: 1.4em;
+}
+
+#timer {
+  font-size: 24px;
+  margin: 20px;
+  color: #00ffae;
+}
+
+button {
+  font-size: 12px;
+  padding: 10px 20px;
+  font-family: 'Press Start 2P', cursive;
+  background-color: #fbc531;
+  border: 2px solid #fff;
+  color: #000;
+  cursor: pointer;
+  box-shadow: 0 0 4px #fbc531;
+}
+
+button:disabled {
+  background-color: #555;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+label, select {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  margin-top: 20px;
+}
+
+select {
+  background-color: #333;
+  color: #fff;
+  border: 2px solid #fbc531;
+  padding: 5px;
+}
+
+#modeReminder {
+  margin-top: 10px;
+  color: #00ffae;
+  font-size: 10px;
+}
+
+#catImage {
+  width: 300px;
+  margin-top: 20px;
+  image-rendering: pixelated;
+  border: 2px solid #ffffff00;
+  box-shadow: 0 0 8px #fbc531;
+}
+
+#sessionChecklist {
+  margin-top: 30px;
+  color: #fbc531;
+  text-align: left;
+  display: inline-block;
+  font-size: 10px;
+  max-width: 350px;
+}
+
+#newTaskForm {
+  margin-bottom: 10px;
+  display: flex;
+}
+
+#newTaskInput {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  padding: 4px;
+  width: 200px;
+  background-color: #000;
+  border: 1px solid #fbc531;
+  color: #fbc531;
+}
+
+#newTaskForm button {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  padding: 4px 8px;
+  margin-left: 4px;
+  background-color: #fbc531;
+  border: none;
+  color: #000;
+  cursor: pointer;
+}
+
+#clearCompleted {
+  margin-top: 10px;
+  font-size: 10px;
+  font-family: 'Press Start 2P', cursive;
+  background-color: #fbc531;
+  border: none;
+  color: #000;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+#checklist {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+#checklist li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  background-color: #000;
+  border: 1px solid #fbc531;
+  padding: 4px;
+  cursor: grab;
+}
+
+#checklist input[type="checkbox"] {
+  transform: scale(1.2);
+  margin-right: 8px;
+}
+
+#checklist span {
+  flex-grow: 1;
+  font-size: 10px;
+  font-family: 'Press Start 2P', cursive;
+}
+
+#checklist .delete-button {
+  margin-left: 10px;
+  color: red;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 12px;
+}
+#writingGoals {
+  margin-top: 30px;
+  padding: 10px;
+  border: 2px solid #fbc531;
+  background-color: #000;
+  color: #fbc531;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  box-shadow: 0 0 4px #fbc531;
+}
+
+#wordCountInputs label {
+  display: inline-block;
+  width: 160px;
+  margin: 4px 0;
+  text-align: right;
+}
+
+#wordCountInputs input {
+  width: 60px;
+  font-size: 10px;
+  font-family: 'Press Start 2P', cursive;
+  background-color: #000;
+  color: #fbc531;
+  border: 1px solid #fbc531;
+  margin-left: 10px;
+}
+
+#wordChart {
+  font-size: 12px;
+  color: #fbc531;
+  margin-top: 10px;
+  text-align: left;
+  padding: 10px;
+  background-color: #000;
+  border: 1px solid #fbc531;
+}
+

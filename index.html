@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pomocat</title>
+  <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+
+  <!-- 8-Bit Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom Style -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div id="mainPanel">
+  <div id="timer">25:00</div>
+  <button id="startButton">Start Work</button>
+
+  <div class="modeGroup">
+    <label for="taskMode">What are you working on?</label>
+    <select id="taskMode">
+      <option value="cleaning">Data Cleaning</option>
+      <option value="analysis">Analysis</option>
+      <option value="writing">Writing</option>
+      <option value="editing">Editing</option>
+    </select>
+    <p id="modeReminder">Focus on cleaning your data!</p>
+  </div>
+
+  <div>
+    <img id="catImage" src="assets/cat_sleeping.gif" alt="Cat Sleeping" />
+  </div>
+
+  <div id="sessionChecklist">
+    <h3>Today's Tasks</h3>
+    <form id="newTaskForm">
+      <input type="text" id="newTaskInput" placeholder="Add a new task..." required />
+      <button type="submit">+</button>
+    </form>
+    <ul id="checklist"></ul>
+    <button id="clearCompleted">Clear Completed</button>
+  </div>
+
+  <div id="writingGoals" style="display: none;">
+    <h3>Word Count Tracker</h3>
+    <div id="wordCountInputs"></div>
+    <div id="wordChart"></div>
+  </div>
+</div>
+
+  <!-- Motivation + Countdown -->
+  <div id="motivationBar">
+    <p id="motivationMessage">You've got this!</p>
+    <p id="countdown"></p>
+  </div>
+
+  <!-- JS Logic -->
+  <script src="script.js"></script>
+</body>
+</html>
+
