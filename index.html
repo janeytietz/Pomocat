@@ -27,6 +27,15 @@
   <div id="timer">25:00</div>
   <button id="startButton">Start Work</button>
 
+    <!-- XP + Level -->
+  <div id="xpLevelDisplay" class="xp-display"> LVL 1 | XP: 0 / 20</div>
+
+  <!-- Motivational Message -->
+<div id="catSpeechBubble">
+  <span id="speechText">You’ve got this!</span>
+</div>
+
+
   <div class="modeGroup">
     <label for="taskMode">What are you working on?</label>
     <select id="taskMode">
@@ -42,6 +51,14 @@
 <div id="topRightControls">
   <button id="pauseResumeButton">⏸️ Pause</button>
   <button id="toggleModeButton">🔁 Toggle Break/Work</button>
+  <!-- Mood Tracker (right side, below buttons) -->
+<div id="moodPrompt" class="mood-tracker-side" style="display:none;">
+  <p>How are you feeling today?</p>
+  <button class="mood">🙂</button>
+  <button class="mood">😐</button>
+  <button class="mood">🙁</button>
+</div>
+
 </div>
   <div>
     <img id="catImage" src="assets/cat_sleeping.gif" alt="Cat Sleeping" />
@@ -87,7 +104,105 @@
 
 <div id="timeTrackerDisplay" style="margin-top: 5px; font-size: 0.9em;"></div>
 
-  <!-- JS Logic -->
+<!-- Level Up Animation -->
+<div id="levelUpOverlay" style="display: none;"></div>
+<div id="levelUpAnimation" class="level-up hidden">
+  <div id="levelUpAnimation" class="hidden">🎉 Level Up! 🎉</div>
+  <div class="level-up-subtext" id="levelUpReward"></div>
+</div>
+<audio id="levelUpSound" src="assets/level_up.mp3"></audio>
+
+<style>
+  .level-up {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 9999;
+    pointer-events: none;
+    animation: fadeOut 3s ease forwards;
+  }
+
+  .level-up.hidden {
+    display: none;
+  }
+
+  .level-up-text {
+    font-size: 3em;
+    font-weight: bold;
+    color: #f39c12;
+    animation: popUp 0.5s ease;
+  }
+
+  .level-up-subtext {
+    font-size: 1.5em;
+    margin-top: 0.5em;
+    color: #333;
+  }
+
+  @keyframes fadeOut {
+    0% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; display: none; }
+  }
+
+  @keyframes popUp {
+    0% { transform: scale(0.5); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+</style>
+
+<script>
+let userXP = 0;
+let userLevel = 1;
+let userCoins = 0;
+
+function xpForLevel(level) {
+  return Math.floor(100 * Math.pow(1.25, level - 1));
+}
+
+function gainXP(amount) {
+  userXP += amount;
+  let nextLevelXP = xpForLevel(userLevel);
+
+  while (userXP >= nextLevelXP) {
+    userXP -= nextLevelXP;
+    userLevel++;
+    const coinsEarned = 10 + (2 * userLevel);
+    userCoins += coinsEarned;
+    showLevelUp(coinsEarned);
+    nextLevelXP = xpForLevel(userLevel);
+  }
+
+  updateLevelDisplay();
+}
+
+function showLevelUp(coinsEarned) {
+  const levelUpDiv = document.getElementById("levelUpAnimation");
+  const rewardText = document.getElementById("levelUpReward");
+  rewardText.textContent = `Level ${userLevel} unlocked! +${coinsEarned} coins!`;
+  levelUpDiv.classList.remove("hidden");
+  levelUpSound.play();
+
+  setTimeout(() => {
+    levelUpDiv.classList.add("hidden");
+  }, 3000);
+}
+
+function updateLevelDisplay() {
+  const display = document.getElementById("levelDisplay");
+  if (display) display.textContent = `Level: ${userLevel} | XP: ${userXP}/${xpForLevel(userLevel)}`;
+}
+</script>
+
+<div id="levelDisplay" style="position: absolute; top: 10px; right: 10px; font-weight: bold; font-size: 1.2em;"></div>
+
   <script src="script.js"></script>
 </body>
 </html>

@@ -18,20 +18,53 @@ h1, h3 {
 
 #mainPanel {
   max-width: 600px;
-  margin: 0 auto;
-  background-color: rgba(0, 0, 0, 0.6); /* semi-transparent black */
+  margin: 55px auto 0 auto; 
+  background-color: rgba(0, 0, 0, 0.6);
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 0 8px #000;
 }
 
 .modeGroup {
-  margin-top: 20px;
+  margin-top: 0px;
+  display: block;
 }
 
+
+#levelUpOverlay {
+  display: none;
+}
+
+#levelUpOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.85);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  font-size: 2rem;
+  font-family: 'Press Start 2P', cursive;
+  text-align: center;
+}
+
+#levelUpOverlay div {
+  background: #fff8dc;
+  padding: 40px;
+  border-radius: 20px;
+  border: 3px dashed gold;
+  box-shadow: 0 0 10px gold;
+}
+
+
 #timer {
-  font-size: 32px;
+  font-size: 46px;
+  margin-top: 40px;
   margin-bottom: 10px;
+  color: #00ffae;
 }
 
 /* Center button and dropdown group */
@@ -60,12 +93,6 @@ h1, h3 {
   color: #fbc531;
   text-align: left;
   line-height: 1.4em;
-}
-
-#timer {
-  font-size: 24px;
-  margin: 20px;
-  color: #00ffae;
 }
 
 button {
@@ -289,5 +316,73 @@ select {
 #wordChart div {
   font-family: monospace;
 }
+
+.xp-display {
+  font-family: 'Press Start 2P', monospace;
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+#catSpeechBubble {
+  position: absolute;
+  bottom: 250px; /* Adjust to sit above the cat */
+  left: 75%;
+  transform: translateX(-50%) rotate(35deg);
+  max-width: 200px;
+  background: #fffbe6;
+  color: #000;
+  font-size: 10px;
+  font-family: 'Press Start 2P', cursive;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 2px solid #fbc531;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+  z-index: 5;
+}
+
+#catSpeechBubble::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px 10px 0 10px;
+  border-style: solid;
+  border-color: #fffbe6 transparent transparent transparent;
+}
+
+
+.mood-tracker-side {
+  position: absolute;
+  top: 120px; /* Adjust based on your layout */
+  right: 20px;
+  background: rgba(0,0,0,0.6);
+  padding: 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  color: white;
+  z-index: 10;
+}
+
+.mood-tracker-side p {
+  margin: 4px 0;
+}
+
+.mood-tracker-side .mood {
+  background: #333;
+  color: white;
+  border: 1px solid #aaa;
+  margin: 2px;
+  padding: 4px 6px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
 
 

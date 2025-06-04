@@ -220,6 +220,7 @@ function updateWordProgress() {
     container.appendChild(row);
   });
 
+  document.getElementById("moodPrompt").style.display = isWorking ? "none" : "block";
   // Progress bar
   const barWrapper = document.createElement("div");
   barWrapper.style.marginTop = "10px";
@@ -249,6 +250,7 @@ function updateWordProgress() {
 updateCycleIndicator();
 
 const reminders = {
+  litreview: "There's always more to read!",
   cleaning: "Focus on cleaning your data!",
   analysis: "Keep digging into those patterns!",
   writing: "Just write. Even badly. Edit later.",
@@ -338,6 +340,10 @@ function startTimer() {
       startButton.disabled = false;
     }
   }, 1000);
+  // Give XP every minute (not paused)
+if (!isPaused && timeRemaining % 60 === 0) {
+  gainExperience(2);
+}
 }
 
 function renderWordCountInputs() {
@@ -475,6 +481,100 @@ function enableDragAndDrop() {
     });
   });
 }
+
+// Levelling up
+
+const levelUpSound = new Audio("assets/level_up.mp3");
+levelUpSound.onerror = () => console.warn("Level-up sound missing");
+
+if (!document.getElementById("levelUpOverlay")) {
+  const overlayDiv = document.createElement("div");
+  overlayDiv.id = "levelUpOverlay";
+  document.body.appendChild(overlayDiv);
+}
+
+// Level logic variables
+let level = 1;
+let experience = 0;
+
+function getXPForLevel(lvl) {
+  return 10 * lvl + 5 * (lvl - 1); // Nonlinear growth
+}
+
+function rewardForLevel(lvl) {
+  return 5 + Math.floor(lvl / 2); // Increase coins gradually
+}
+
+function updateXPDisplay() {
+  const nextXP = getXPForLevel(level + 1);
+  document.getElementById("xpLevelDisplay").textContent = `🐾 LVL ${level} | XP: ${experience} / ${nextXP}`;
+}
+
+
+function checkLevelUp() {
+  const requiredXP = getXPForLevel(level + 1);
+  if (experience >= requiredXP) {
+    level++;
+    const coinsEarned = rewardForLevel(level);
+    coins += coinsEarned;
+    showLevelUpAnimation(level, coinsEarned);
+  }
+  updateXPDisplay();
+}
+
+
+function showLevelUpAnimation(level, coinsEarned) {
+  const overlay = document.getElementById("levelUpOverlay");
+  if (!overlay) return;
+
+  overlay.innerHTML = `
+    <div>
+      🎉 Level Up!<br>
+      You’re now level ${level}!<br>
+      🪙 +${coinsEarned} coins
+    </div>
+  `;
+  overlay.style.display = "block";
+
+  const sound = new Audio("assets/levelup.mp3");
+  sound.play().catch(e => console.warn("Could not play sound:", e));
+
+  setTimeout(() => {
+    overlay.style.display = "none";
+    overlay.innerHTML = "";
+  }, 3000);
+}
+
+function updateStatsDisplay() {
+  const statsDisplay = document.getElementById("gameStats");
+  if (statsDisplay) {
+    statsDisplay.textContent = `Lives: ${lives} | Coins: ${coins} | XP: ${experience} | Level: ${level}`;
+  }
+}
+
+// Motivational messages
+const motivationalPhrases = [
+  "You’ve got this!",
+  "Every word counts!",
+  "Break it into chunks!",
+  "Progress, not perfection!",
+  "Trust the process!"
+];
+
+function showRandomMotivation() {
+  const msg = motivationalPhrases[Math.floor(Math.random() * motivationalPhrases.length)];
+  document.getElementById("speechText").textContent = msg;
+}
+
+// Example: trigger it on break mode or interval
+setInterval(showRandomMotivation, 1000 * 60 * 10); // every 10 minutes
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  showRandomMotivation();
+});
+
+
 
 // Initial Setup
 updateCountdown();
