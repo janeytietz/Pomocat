@@ -250,8 +250,8 @@ function updateWordProgress() {
 updateCycleIndicator();
 
 const reminders = {
-  lifeadmin: "Sort your life out!",
-  litreview: "There's always more to read!",
+  life_admin: "Sort your life out!",
+  lit_review: "There's always more to read!",
   cleaning: "Focus on cleaning your data!",
   analysis: "Keep digging into those patterns!",
   writing: "Just write. Even badly. Edit later.",
@@ -262,11 +262,11 @@ modeReminder.textContent = reminders[taskModeSelect.value];
 
 let modeTimeTracker = {
   cleaning: 0,
-  litreview: 0,
+  lit_review: 0,
   analysis: 0,
   writing: 0,
   editing: 0,
-  lifeadmin: 0
+  life_admin: 0
 };
 
 const writingGoals = {
