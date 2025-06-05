@@ -11,6 +11,21 @@ const taskForm = document.getElementById("newTaskForm");
 const taskInput = document.getElementById("newTaskInput");
 const clearCompletedBtn = document.getElementById("clearCompleted");
 
+// Pomodoro config
+const WORK_DURATION = 25 * 60;
+const BREAK_DURATION = 5 * 60;
+const LONG_BREAK_DURATION = 15 * 60;
+
+let isWorking = true;
+let timeRemaining = WORK_DURATION;
+let timerRunning = false;
+let intervalID = null;
+let sessionCount = 0;
+let isPaused = false;
+let lastWorkDate = localStorage.getItem("lastWorkDate") || null;
+let dailyStreak = parseInt(localStorage.getItem("dailyStreak") || "0");
+
+
 // Audio
 const workSound = new Audio("assets/work_start.mp3");
 const breakSound = new Audio("assets/break_start.mp3");
@@ -40,17 +55,13 @@ function updateCycleIndicator() {
   });
 }
 
-// Pomodoro config
-const WORK_DURATION = 25 * 60;
-const BREAK_DURATION = 5 * 60;
-const LONG_BREAK_DURATION = 15 * 60;
 
-let isWorking = true;
-let timeRemaining = WORK_DURATION;
-let timerRunning = false;
-let intervalID = null;
-let sessionCount = 0;
-let isPaused = false;
+function completeWorkSession() {
+  gainXP(5);
+  updateStreak();
+  sessionCount++;
+  updateCycleIndicator();
+} 
 
 
 document.getElementById("pauseResumeButton").addEventListener("click", () => {
@@ -336,8 +347,9 @@ function startTimer() {
     if (timeRemaining <= 0) {
       clearInterval(intervalID);
       timerRunning = false;
-      sessionCount++;
-      updateCycleIndicator();
+      if (isWorking) {
+  completeWorkSession(); // handles XP, streak, sessionCount, cycle dots
+      }
       switchMode();
       updateDisplay();
       startButton.disabled = false;
@@ -497,34 +509,41 @@ if (!document.getElementById("levelUpOverlay")) {
 }
 
 // Level logic variables
+// XP + level
 let level = 1;
 let experience = 0;
 
 function getXPForLevel(lvl) {
-  return 10 * lvl + 5 * (lvl - 1); // Nonlinear growth
+  return 10 * lvl + 5 * (lvl - 1);
 }
 
-function rewardForLevel(lvl) {
-  return 5 + Math.floor(lvl / 2); // Increase coins gradually
+function gainXP(amount) {
+  experience += amount;
+  checkLevelUp();
+  updateXPDisplay();
 }
-
-function updateXPDisplay() {
-  const nextXP = getXPForLevel(level + 1);
-  document.getElementById("xpLevelDisplay").textContent = `🐾 LVL ${level} | XP: ${experience} / ${nextXP}`;
-}
-
 
 function checkLevelUp() {
   const requiredXP = getXPForLevel(level + 1);
   if (experience >= requiredXP) {
     level++;
-    const coinsEarned = rewardForLevel(level);
-    coins += coinsEarned;
+    const coinsEarned = 5 + Math.floor(level / 2);
     showLevelUpAnimation(level, coinsEarned);
   }
-  updateXPDisplay();
 }
 
+function updateXPDisplay() {
+  const nextXP = getXPForLevel(level + 1);
+  const xpDisplay = document.getElementById("xpLevelDisplay");
+  if (xpDisplay) {
+    xpDisplay.textContent = ` LVL ${level} | XP: ${experience} / ${nextXP}`;
+  }
+
+  const streakDisplay = document.getElementById("dailyStreakDisplay");
+  if (streakDisplay) {
+    streakDisplay.textContent = `🔥 Daily Streak: ${dailyStreak}`;
+  }
+}
 
 function showLevelUpAnimation(level, coinsEarned) {
   const overlay = document.getElementById("levelUpOverlay");
@@ -535,17 +554,33 @@ function showLevelUpAnimation(level, coinsEarned) {
       🎉 Level Up!<br>
       You’re now level ${level}!<br>
       🪙 +${coinsEarned} coins
-    </div>
-  `;
+    </div>`;
   overlay.style.display = "block";
-
-  const sound = new Audio("assets/levelup.mp3");
-  sound.play().catch(e => console.warn("Could not play sound:", e));
 
   setTimeout(() => {
     overlay.style.display = "none";
     overlay.innerHTML = "";
   }, 3000);
+}
+
+// Daily streak tracking
+function updateStreak() {
+  const today = new Date().toISOString().split("T")[0];
+  if (lastWorkDate !== today) {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split("T")[0];
+
+    if (lastWorkDate === yesterdayStr) {
+      dailyStreak++;
+    } else {
+      dailyStreak = 1;
+    }
+    lastWorkDate = today;
+    localStorage.setItem("lastWorkDate", today);
+    localStorage.setItem("dailyStreak", dailyStreak.toString());
+  }
+  updateXPDisplay();
 }
 
 function updateStatsDisplay() {
@@ -556,12 +591,13 @@ function updateStatsDisplay() {
 }
 
 // Motivational messages
-const motivationalMessages = [
-  "You’ve got this!",
+ const motivationalMessages = [
+  "Do a little every day! Don't procrastinate!",
   "Every word counts!",
   "Break it into chunks!",
   "Progress, not perfection!",
-  "Trust the process!",
+  "You're smart; don't forget that!",
+  "You don't need to change the world with your diss.",
   "Just think how hard this would be if you were a clam!"
 ];
 
@@ -569,27 +605,29 @@ let currentMessageIndex = 0;
 
 function updateCatMessage() {
   const speech = document.getElementById("catSpeech");
+  if (!speech) return;
+
   speech.textContent = motivationalMessages[currentMessageIndex];
   speech.style.display = "block";
 
-  // Hide after 1 minute
   setTimeout(() => {
     speech.style.display = "none";
   }, 60 * 1000);
 
-  // Schedule next message in 5–10 min
-  const nextDelay = (5 + Math.random() * 5) * 60 * 1000; // 5–10 minutes
+  const nextDelay = (5 + Math.random() * 5) * 60 * 1000;
   setTimeout(() => {
     currentMessageIndex = (currentMessageIndex + 1) % motivationalMessages.length;
     updateCatMessage();
   }, nextDelay);
 }
 
-// Start on load
-window.addEventListener("load", () => {
-  setTimeout(updateCatMessage, 5000); // first message after 5s
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(updateCatMessage, 5000);
 });
 
+window.addEventListener("DOMContentLoaded", () => {
+  updateStreak(); // check today's streak
+});
 
 
 // Initial Setup
