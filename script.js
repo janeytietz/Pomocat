@@ -338,9 +338,12 @@ function startTimer() {
   timeRemaining--;
   updateDisplay();
 
+if (isWorking) {
   const currentMode = taskModeSelect.value;
   modeTimeTracker[currentMode] += 1;
   updateTimeTrackerDisplay();
+}
+
 
   if (isWorking && timeRemaining % 60 === 0) {
     gainXP(1); // Give 1 XP per working minute
