@@ -56,12 +56,14 @@
 <div id="topRightControls">
   <button id="pauseResumeButton">⏸️ Pause</button>
   <button id="toggleModeButton">🔁 Toggle Break/Work</button>
+  <button id="toggleTimeStats">📊 View Time Spent</button>
   <!-- Mood Tracker (right side, below buttons) -->
 <div id="moodPrompt" class="mood-tracker-side" style="display:none;">
   <p>All things considered, how happy are you right now?</p>
   <button class="mood">🙂</button>
   <button class="mood">😐</button>
   <button class="mood">🙁</button>
+</div>
 </div>
 
 </div>
@@ -103,8 +105,6 @@
     <p id="motivationMessage">You've got this!</p>
     <p id="countdown"></p>
   </div>
-
-<div id="timeTrackerDisplay" style="margin-top: 5px; font-size: 0.9em;"></div>
 
 <!-- Level Up Animation -->
 <div id="levelUpOverlay" style="display: none;"></div>
@@ -206,6 +206,10 @@ function updateLevelDisplay() {
 <div id="levelDisplay" style="position: absolute; top: 10px; right: 10px; font-weight: bold; font-size: 1.2em;"></div>
 
   <script src="script.js"></script>
+</div>
+<div id="bottomLeftPanel" class="hidden">
+  <div id="timeTrackerDisplay"></div>
+</div>
 </body>
 </html>
 

@@ -661,6 +661,17 @@ window.addEventListener("DOMContentLoaded", () => {
   updateStreak(); // check today's streak
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.getElementById("toggleTimeStats");
+  const timeStatsDiv = document.getElementById("bottomLeftPanel");
+
+  toggleBtn.addEventListener("click", () => {
+    timeStatsDiv.classList.toggle("hidden");
+    toggleBtn.textContent = timeStatsDiv.classList.contains("hidden")
+      ? "📊 View Time Spent"
+      : "📉 Hide Time Spent";
+  });
+});
 
 // Initial Setup
 updateCountdown();

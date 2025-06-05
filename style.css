@@ -388,5 +388,24 @@ select {
   cursor: pointer;
 }
 
+.hidden {
+  display: none;
+}
+
+#bottomLeftPanel {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0, 0, 0, 0.65);
+  color: white;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  padding: 10px;
+  border: 2px solid #fbc531;
+  border-radius: 8px;
+  z-index: 999;
+}
+
+
 
 
