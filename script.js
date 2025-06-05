@@ -188,25 +188,24 @@ function switchMode() {
   isWorking = !isWorking;
 
   if (isWorking) {
-    sessionCount++;
     timeRemaining = WORK_DURATION;
     stopCatGame();
     document.getElementById("playGameButton").style.display = "none";
+    workSound.play();
   } else {
+    completeWorkSession();
     timeRemaining = (sessionCount > 0 && sessionCount % 4 === 0)
       ? LONG_BREAK_DURATION
       : BREAK_DURATION;
-    // Don't start game here — wait for user to press button
     document.getElementById("playGameButton").style.display = "block";
+    breakSound.play();
   }
 
   updateCatImage();
   updateButtonLabel();
   updateCycleIndicator();
-
-  if (isWorking) workSound.play();
-  else breakSound.play();
 }
+
 function updateWordProgress() {
   const container = document.getElementById("wordChart");
   container.innerHTML = "";
@@ -530,6 +529,7 @@ function checkLevelUp() {
   const requiredXP = getXPForLevel(level + 1);
   if (experience >= requiredXP) {
     level++;
+    experience = 0;
     const coinsEarned = 5 + Math.floor(level / 2);
     showLevelUpAnimation(level, coinsEarned);
   }
@@ -599,7 +599,9 @@ function updateStatsDisplay() {
   "Every word counts!",
   "Break it into chunks!",
   "Progress, not perfection!",
-  "You're smart; don't forget that!",
+  "There will be daaaaays like thiiiiiiis!",
+  "You gotta roll with it! You've got to take your time!",
+  "What's the story morning glory?",
   "You don't need to change the world with your diss.",
   "Just think how hard this would be if you were a clam!"
 ];
@@ -626,6 +628,30 @@ function updateCatMessage() {
 
 window.addEventListener("DOMContentLoaded", () => {
   setTimeout(updateCatMessage, 5000);
+});
+
+document.querySelectorAll(".mood").forEach(btn => {
+  btn.addEventListener("click", () => {
+    let moodMessage = "Hope your day gets better!";
+    if (btn.textContent === "🙂") moodMessage = "Glad to hear you're doing well! You've been doing a great job!";
+    if (btn.textContent === "😐") moodMessage = "Steady progress is still progress!";
+    if (btn.textContent === "🙁") moodMessage = "Sending you encouragement – you’ve got this! Consider taking a break if you're really not feeling well.";
+
+    const speech = document.getElementById("catSpeech");
+    speech.textContent = moodMessage;
+    speech.style.display = "block";
+
+    setTimeout(() => {
+      speech.style.display = "none";
+    }, 10000); // Hide speech after 10 seconds
+
+    const moodBox = document.getElementById("moodPrompt");
+    if (moodBox) {
+      setTimeout(() => {
+        moodBox.style.display = "none";
+      }, 10000); // Also hide the mood box after 10 seconds
+    }
+  });
 });
 
 window.addEventListener("DOMContentLoaded", () => {
