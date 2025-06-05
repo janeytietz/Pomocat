@@ -318,8 +318,8 @@ function updateTimeTrackerDisplay() {
 
   tracker.innerHTML = `
     <strong>Time Spent:</strong><br>
-    Life Admin: ${formatMinutes(modeTimeTracker.lifeadmin)}<br>
-    Lit Review: ${formatMinutes(modeTimeTracker.litreview)}<br>
+    Life Admin: ${formatMinutes(modeTimeTracker.life_admin)}<br>
+    Lit Review: ${formatMinutes(modeTimeTracker.lit_review)}<br>
     Cleaning: ${formatMinutes(modeTimeTracker.cleaning)}<br>
     Analysis: ${formatMinutes(modeTimeTracker.analysis)}<br>
     Writing: ${formatMinutes(modeTimeTracker.writing)}<br>
@@ -334,31 +334,34 @@ function startTimer() {
   startButton.disabled = true;
 
   intervalID = setInterval(() => {
-    if (isPaused) return;
+  if (isPaused) return;
 
-    timeRemaining--;
-    updateDisplay();
+  timeRemaining--;
+  updateDisplay();
 
-    const currentMode = taskModeSelect.value;
-    modeTimeTracker[currentMode] += 1;
-    updateTimeTrackerDisplay();
+  const currentMode = taskModeSelect.value;
+  modeTimeTracker[currentMode] += 1;
+  updateTimeTrackerDisplay();
 
+  if (isWorking && timeRemaining % 60 === 0) {
+    gainXP(1); // Give 1 XP per working minute
+  }
 
-    if (timeRemaining <= 0) {
-      clearInterval(intervalID);
-      timerRunning = false;
-      if (isWorking) {
-  completeWorkSession(); // handles XP, streak, sessionCount, cycle dots
-      }
-      switchMode();
-      updateDisplay();
-      startButton.disabled = false;
+  if (timeRemaining <= 0) {
+    clearInterval(intervalID);
+    timerRunning = false;
+
+    if (isWorking) {
+      completeWorkSession(); // XP + streak
+    } else {
+      sessionCount++;
     }
-  }, 1000);
-  // Give XP every minute (not paused)
-if (!isPaused && timeRemaining % 60 === 0) {
-  gainExperience(2);
-}
+
+    switchMode();
+    updateDisplay();
+    startButton.disabled = false;
+  }
+}, 1000);
 }
 
 function renderWordCountInputs() {
