@@ -250,6 +250,7 @@ function updateWordProgress() {
 updateCycleIndicator();
 
 const reminders = {
+  lifeadmin: "Sort your life out!",
   litreview: "There's always more to read!",
   cleaning: "Focus on cleaning your data!",
   analysis: "Keep digging into those patterns!",
@@ -264,7 +265,8 @@ let modeTimeTracker = {
   litreview: 0,
   analysis: 0,
   writing: 0,
-  editing: 0
+  editing: 0,
+  lifeadmin: 0
 };
 
 const writingGoals = {
@@ -305,11 +307,12 @@ function updateTimeTrackerDisplay() {
 
   tracker.innerHTML = `
     <strong>Time Spent:</strong><br>
-    📚 Lit Review: ${formatMinutes(modeTimeTracker.litreview)}<br>
-    🧹 Cleaning: ${formatMinutes(modeTimeTracker.cleaning)}<br>
-    📊 Analysis: ${formatMinutes(modeTimeTracker.analysis)}<br>
-    ✍️ Writing: ${formatMinutes(modeTimeTracker.writing)}<br>
-    ✏️ Editing: ${formatMinutes(modeTimeTracker.editing)}
+    Life Admin: ${formatMinutes(modeTimeTracker.lifeadmin)}<br>
+    Lit Review: ${formatMinutes(modeTimeTracker.litreview)}<br>
+    Cleaning: ${formatMinutes(modeTimeTracker.cleaning)}<br>
+    Analysis: ${formatMinutes(modeTimeTracker.analysis)}<br>
+    Writing: ${formatMinutes(modeTimeTracker.writing)}<br>
+    Editing: ${formatMinutes(modeTimeTracker.editing)}
   `;
 }
 
@@ -553,25 +556,38 @@ function updateStatsDisplay() {
 }
 
 // Motivational messages
-const motivationalPhrases = [
+const motivationalMessages = [
   "You’ve got this!",
   "Every word counts!",
   "Break it into chunks!",
   "Progress, not perfection!",
-  "Trust the process!"
+  "Trust the process!",
+  "Just think how hard this would be if you were a clam!"
 ];
 
-function showRandomMotivation() {
-  const msg = motivationalPhrases[Math.floor(Math.random() * motivationalPhrases.length)];
-  document.getElementById("speechText").textContent = msg;
+let currentMessageIndex = 0;
+
+function updateCatMessage() {
+  const speech = document.getElementById("catSpeech");
+  speech.textContent = motivationalMessages[currentMessageIndex];
+  speech.style.display = "block";
+
+  // Hide after 1 minute
+  setTimeout(() => {
+    speech.style.display = "none";
+  }, 60 * 1000);
+
+  // Schedule next message in 5–10 min
+  const nextDelay = (5 + Math.random() * 5) * 60 * 1000; // 5–10 minutes
+  setTimeout(() => {
+    currentMessageIndex = (currentMessageIndex + 1) % motivationalMessages.length;
+    updateCatMessage();
+  }, nextDelay);
 }
 
-// Example: trigger it on break mode or interval
-setInterval(showRandomMotivation, 1000 * 60 * 10); // every 10 minutes
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  showRandomMotivation();
+// Start on load
+window.addEventListener("load", () => {
+  setTimeout(updateCatMessage, 5000); // first message after 5s
 });
 
 

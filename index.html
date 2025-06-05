@@ -30,9 +30,10 @@
     <!-- XP + Level -->
   <div id="xpLevelDisplay" class="xp-display"> LVL 1 | XP: 0 / 20</div>
 
-  <!-- Motivational Message -->
-<div id="catSpeechBubble">
-  <span id="speechText">You’ve got this!</span>
+   <!-- Cat Wrapper -->
+<div id="catWrapper" style="position: relative; display: inline-block;">
+  <img id="catImage" src="assets/cat_sleeping.gif" />
+  <div id="catSpeech" class="cat-speech" style="display: none;"></div>
 </div>
 
 
@@ -60,9 +61,6 @@
 </div>
 
 </div>
-  <div>
-    <img id="catImage" src="assets/cat_sleeping.gif" alt="Cat Sleeping" />
-  </div>
   <div id="sessionChecklist">
     <h3>Today's Tasks</h3>
     <form id="newTaskForm">
