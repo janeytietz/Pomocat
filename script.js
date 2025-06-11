@@ -29,8 +29,6 @@ let dailyStreak = parseInt(localStorage.getItem("dailyStreak") || "0");
 // Audio
 const workSound = new Audio("assets/work_start.mp3");
 const breakSound = new Audio("assets/break_start.mp3");
-workSound.onerror = () => console.log("⚠️ Failed to load work sound");
-breakSound.onerror = () => console.log("⚠️ Failed to load break sound");
 
 // Dissertation countdown
 function updateCountdown() {
@@ -61,28 +59,160 @@ function completeWorkSession() {
   updateStreak();
   sessionCount++;
   updateCycleIndicator();
-} 
+  saveStats();
+}
+
+//pomostats
+
+let stats = {
+  xp: 0,
+  level: 1,
+  totalMinutes: 0,
+  lastActiveDate: null,
+  streak: 0,
+  modeTimeTracker: {
+    cleaning: 0,
+    lit_review: 0,
+    analysis: 0,
+    writing: 0,
+    editing: 0,
+    life_admin: 0
+  }
+};
 
 
-document.getElementById("pauseResumeButton").addEventListener("click", () => {
-  if (!timerRunning) return;
+function saveStats() {
+  localStorage.setItem("pomocatStats", JSON.stringify(stats));
+}
 
-  isPaused = !isPaused;
-  document.getElementById("pauseResumeButton").textContent = isPaused ? "▶️ Resume" : "⏸️ Pause";
-});
+function startTimer() {
+  if (timerRunning) return;
 
-document.getElementById("toggleModeButton").addEventListener("click", () => {
-  clearInterval(intervalID);
-  timerRunning = false;
+  timerRunning = true;
   isPaused = false;
-  document.getElementById("pauseResumeButton").textContent = "⏸️ Pause";
-  startButton.disabled = false;
+  startButton.textContent = "Pause";
 
-  switchMode();
+  intervalID = setInterval(() => {
+    if (isPaused) return;
+    timeRemaining--;
+    updateDisplay();
+
+    if (isWorking) {
+  stats.totalMinutes++;
+  const mode = taskModeSelect.value;
+  stats.modeTimeTracker[mode] += 1;
+
+  if (stats.totalMinutes % 60 === 0) {
+    stats.xp += 1;
+    checkLevelUp();
+  }
+
+  updateTimeTrackerDisplay();
+  updateXPDisplay();
+  saveStats();
+}
+
+
+    if (timeRemaining <= 0) {
+      clearInterval(intervalID);
+      timerRunning = false;
+      startButton.textContent = "Start Work";
+      if (isWorking) {
+        completeWorkSession();
+      } else {
+        sessionCount++;
+      }
+      switchMode();
+      updateDisplay();
+      startButton.disabled = false;
+    }
+  }, 1000);
+}
+
+function updateXPDisplay() {
+  const nextXP = stats.level * 50;
+  const xpDisplay = document.getElementById("xpLevelDisplay");
+  const streakDisplay = document.getElementById("dailyStreakDisplay");
+
+  if (xpDisplay) {
+    xpDisplay.textContent = ` LVL ${stats.level} | XP: ${stats.xp} / ${nextXP}`;
+  }
+  if (streakDisplay) {
+    streakDisplay.textContent = `🔥 Daily Streak: ${stats.streak}`;
+  }
+}
+
+function loadStats() {
+  const storedStats = localStorage.getItem("pomocatStats");
+  if (storedStats) {
+    stats = JSON.parse(storedStats);
+    updateXPDisplay();
+  }
+}
+
+
+function checkLevelUp() {
+  const xpNeeded = stats.level * 50;
+  if (stats.xp >= xpNeeded) {
+    stats.level++;
+    stats.xp -= xpNeeded;
+    showLevelUpAnimation(stats.level);
+    saveStats();
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  // Existing setup
+  loadStats();
+  updateStreak();
+  updateTimeTrackerDisplay();
+  updateCountdown();
   updateDisplay();
+  updateCatImage();
+  updateButtonLabel();
+  renderTasks();
+
+  // Button listeners
+  document.getElementById("toggleModeButton").addEventListener("click", () => {
+    clearInterval(intervalID);
+    timerRunning = false;
+    isPaused = false;
+    startButton.disabled = false;
+
+    switchMode();
+    updateDisplay();
+  });
+
+  document.getElementById("toggleTimeStats").addEventListener("click", () => {
+    const timeStatsDiv = document.getElementById("bottomLeftPanel");
+    const toggleBtn = document.getElementById("toggleTimeStats");
+
+    timeStatsDiv.classList.toggle("hidden");
+    toggleBtn.textContent = timeStatsDiv.classList.contains("hidden")
+      ? "📊 View Time Spent"
+      : "📉 Hide Time Spent";
+  });
+
+function toggleTimer() {
+  if (!timerRunning) {
+    startTimer();
+    startButton.textContent = "Pause";
+  } else if (isPaused) {
+    isPaused = false;
+    startButton.textContent = "Pause";
+  } else {
+    isPaused = true;
+    startButton.textContent = "Resume";
+  }
+}
+
+document.getElementById("startButton").addEventListener("click", toggleTimer);
+
+  document.getElementById("playGameButton").addEventListener("click", () => {
+    if (!gameRunning) startCatGame();
+  });
 });
 
-startButton.addEventListener("click", startTimer);
 
 let gameInterval;
 let lives = 9;
@@ -206,6 +336,23 @@ function switchMode() {
   updateCycleIndicator();
 }
 
+function logPomodoro(minutes = 25) {
+  stats.totalMinutes += minutes;
+  stats.xp += 10; // e.g., 10 XP per Pomodoro
+  checkLevelUp();
+  updateStreak();
+  saveStats();
+  updateStatsUI();
+}
+
+function checkLevelUp() {
+  const xpNeeded = stats.level * 50; // e.g., 50 XP per level
+  if (stats.xp >= xpNeeded) {
+    stats.level++;
+    stats.xp = stats.xp - xpNeeded; // carry over extra XP
+  }
+}
+
 function updateWordProgress() {
   const container = document.getElementById("wordChart");
   container.innerHTML = "";
@@ -309,61 +456,21 @@ function updateCatImage() {
 function updateButtonLabel() {
   startButton.textContent = isWorking ? "Start Work" : "Start Break";
 }
-
 function updateTimeTrackerDisplay() {
   const tracker = document.getElementById("timeTrackerDisplay");
+  if (!tracker) return;
 
-  const formatMinutes = seconds => `${Math.floor(seconds / 60)} min`;
+  const formatMinutes = (s) => `${Math.floor(s / 60)} min`;
 
   tracker.innerHTML = `
     <strong>Time Spent:</strong><br>
-    Life Admin: ${formatMinutes(modeTimeTracker.life_admin)}<br>
-    Lit Review: ${formatMinutes(modeTimeTracker.lit_review)}<br>
-    Cleaning: ${formatMinutes(modeTimeTracker.cleaning)}<br>
-    Analysis: ${formatMinutes(modeTimeTracker.analysis)}<br>
-    Writing: ${formatMinutes(modeTimeTracker.writing)}<br>
-    Editing: ${formatMinutes(modeTimeTracker.editing)}
+    Life Admin: ${formatMinutes(stats.modeTimeTracker.life_admin)}<br>
+    Lit Review: ${formatMinutes(stats.modeTimeTracker.lit_review)}<br>
+    Cleaning: ${formatMinutes(stats.modeTimeTracker.cleaning)}<br>
+    Analysis: ${formatMinutes(stats.modeTimeTracker.analysis)}<br>
+    Writing: ${formatMinutes(stats.modeTimeTracker.writing)}<br>
+    Editing: ${formatMinutes(stats.modeTimeTracker.editing)}
   `;
-}
-
-function startTimer() {
-  if (timerRunning) return;
-
-  timerRunning = true;
-  startButton.disabled = true;
-
-  intervalID = setInterval(() => {
-  if (isPaused) return;
-
-  timeRemaining--;
-  updateDisplay();
-
-if (isWorking) {
-  const currentMode = taskModeSelect.value;
-  modeTimeTracker[currentMode] += 1;
-  updateTimeTrackerDisplay();
-}
-
-
-  if (isWorking && timeRemaining % 60 === 0) {
-    gainXP(1); // Give 1 XP per working minute
-  }
-
-  if (timeRemaining <= 0) {
-    clearInterval(intervalID);
-    timerRunning = false;
-
-    if (isWorking) {
-      completeWorkSession(); // XP + streak
-    } else {
-      sessionCount++;
-    }
-
-    switchMode();
-    updateDisplay();
-    startButton.disabled = false;
-  }
-}, 1000);
 }
 
 function renderWordCountInputs() {
@@ -514,42 +621,44 @@ if (!document.getElementById("levelUpOverlay")) {
 }
 
 // Level logic variables
-// XP + level
-let level = 1;
-let experience = 0;
 
 function getXPForLevel(lvl) {
   return 10 * lvl + 5 * (lvl - 1);
 }
 
 function gainXP(amount) {
-  experience += amount;
+  stats.xp += amount;
   checkLevelUp();
   updateXPDisplay();
+  saveStats();
 }
 
+
 function checkLevelUp() {
-  const requiredXP = getXPForLevel(level + 1);
-  if (experience >= requiredXP) {
-    level++;
-    experience = 0;
-    const coinsEarned = 5 + Math.floor(level / 2);
-    showLevelUpAnimation(level, coinsEarned);
+  const requiredXP = getXPForLevel(stats.level + 1);
+  if (stats.xp >= requiredXP) {
+    stats.level++;
+    stats.xp -= requiredXP;
+    const coinsEarned = 5 + Math.floor(stats.level / 2);
+    showLevelUpAnimation(stats.level, coinsEarned);
+    saveStats();
   }
 }
 
+
 function updateXPDisplay() {
-  const nextXP = getXPForLevel(level + 1);
+  const nextXP = getXPForLevel(stats.level + 1);
   const xpDisplay = document.getElementById("xpLevelDisplay");
   if (xpDisplay) {
-    xpDisplay.textContent = ` LVL ${level} | XP: ${experience} / ${nextXP}`;
+    xpDisplay.textContent = ` LVL ${stats.level} | XP: ${stats.xp} / ${nextXP}`;
   }
 
   const streakDisplay = document.getElementById("dailyStreakDisplay");
   if (streakDisplay) {
-    streakDisplay.textContent = `🔥 Daily Streak: ${dailyStreak}`;
+    streakDisplay.textContent = `🔥 Daily Streak: ${stats.streak}`;
   }
 }
+
 
 function showLevelUpAnimation(level, coinsEarned) {
   const overlay = document.getElementById("levelUpOverlay");
@@ -571,23 +680,25 @@ function showLevelUpAnimation(level, coinsEarned) {
 
 // Daily streak tracking
 function updateStreak() {
-  const today = new Date().toISOString().split("T")[0];
-  if (lastWorkDate !== today) {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split("T")[0];
+  const today = new Date().toDateString();
+  const last = stats.lastActiveDate;
 
-    if (lastWorkDate === yesterdayStr) {
-      dailyStreak++;
-    } else {
-      dailyStreak = 1;
-    }
-    lastWorkDate = today;
-    localStorage.setItem("lastWorkDate", today);
-    localStorage.setItem("dailyStreak", dailyStreak.toString());
+  if (last === today) return; // already logged today
+
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+
+  if (last === yesterday) {
+    stats.streak++;
+  } else {
+    stats.streak = 1;
   }
+
+  stats.lastActiveDate = today;
+  saveStats();
   updateXPDisplay();
 }
+
+
 
 function updateStatsDisplay() {
   const statsDisplay = document.getElementById("gameStats");
@@ -658,8 +769,10 @@ document.querySelectorAll(".mood").forEach(btn => {
 });
 
 window.addEventListener("DOMContentLoaded", () => {
-  updateStreak(); // check today's streak
+  updateStreak(); // check on load
 });
+
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("toggleTimeStats");
@@ -679,3 +792,6 @@ updateDisplay();
 updateCatImage();
 updateButtonLabel();
 renderTasks();
+loadStats();
+
+

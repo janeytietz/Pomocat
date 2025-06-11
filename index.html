@@ -4,69 +4,52 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Old Possum's Book of Productive Cats</title>
-  <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-
-  <!-- 8-Bit Font -->
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Custom Style -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div id="mainPanel" style="position: relative;">
-  <div id="cycleContainer" style="position: absolute; top: 5px; left: 5px; display: flex; gap: 5px;">
-    <div class="cycleDot"></div>
-    <div class="cycleDot"></div>
-    <div class="cycleDot"></div>
-    <div class="cycleDot"></div>
+  <div id="mainPanel" style="position: relative;">
+    <div id="cycleContainer" style="position: absolute; top: 5px; left: 5px; display: flex; gap: 5px;">
+      <div class="cycleDot"></div>
+      <div class="cycleDot"></div>
+      <div class="cycleDot"></div>
+      <div class="cycleDot"></div>
+    </div>
+    <div id="timer">25:00</div>
+    <button id="startButton">Start Work</button>
+    <div id="statusWrapper" class="xp-wrapper">
+      <div id="xpLevelDisplay" class="xp-display"> LVL 1 | XP: 0 / 20</div>
+      <div id="dailyStreakDisplay" class="xp-display">🔥 Streak: 0 days</div>
+    </div>
+    <div id="catWrapper" style="position: relative; display: inline-block;">
+      <img id="catImage" src="assets/cat_sleeping.gif" />
+      <div id="catSpeech" class="cat-speech" style="display: none;"></div>
+    </div>
+    <div class="modeGroup">
+      <label for="taskMode">What are you working on?</label>
+      <select id="taskMode">
+        <option value="life_admin">Life Admin</option>
+        <option value="lit_review">Literature Review</option>
+        <option value="cleaning">Data Cleaning</option>
+        <option value="analysis">Analysis</option>
+        <option value="writing">Writing</option>
+        <option value="editing">Editing</option>
+      </select>
+      <p id="modeReminder">Focus on cleaning your data!</p>
+    </div>
+    <div id="topRightControls">
+      <button id="toggleModeButton">🔁 Toggle Break/Work</button>
+      <button id="toggleTimeStats">📊 View Time Spent</button>
+      <div id="moodPrompt" class="mood-tracker-side" style="display:none;">
+        <p>All things considered, how happy are you right now?</p>
+        <button class="mood">🙂</button>
+        <button class="mood">😐</button>
+        <button class="mood">🙁</button>
+      </div>
+    </div>
   </div>
-  <div id="timer">25:00</div>
-  <button id="startButton">Start Work</button>
-
-    <!-- XP + Level + Streak -->
-<div id="statusWrapper" class="xp-wrapper">
-  <div id="xpLevelDisplay" class="xp-display"> LVL 1 | XP: 0 / 20</div>
-  <div id="dailyStreakDisplay" class="xp-display">🔥 Streak: 0 days</div>
-</div>
-
-   <!-- Cat Wrapper -->
-<div id="catWrapper" style="position: relative; display: inline-block;">
-  <img id="catImage" src="assets/cat_sleeping.gif" />
-  <div id="catSpeech" class="cat-speech" style="display: none;"></div>
-</div>
-
-
-  <div class="modeGroup">
-    <label for="taskMode">What are you working on?</label>
-    <select id="taskMode">
-      <option value="life_admin">Life Admin</option>
-      <option value="lit_review">Literature Review</option>
-      <option value="cleaning">Data Cleaning</option>
-      <option value="analysis">Analysis</option>
-      <option value="writing">Writing</option>
-      <option value="editing">Editing</option>
-    </select>
-    <p id="modeReminder">Focus on cleaning your data!</p>
-  </div>
-
-<div id="topRightControls">
-  <button id="pauseResumeButton">⏸️ Pause</button>
-  <button id="toggleModeButton">🔁 Toggle Break/Work</button>
-  <button id="toggleTimeStats">📊 View Time Spent</button>
-  <!-- Mood Tracker (right side, below buttons) -->
-<div id="moodPrompt" class="mood-tracker-side" style="display:none;">
-  <p>All things considered, how happy are you right now?</p>
-  <button class="mood">🙂</button>
-  <button class="mood">😐</button>
-  <button class="mood">🙁</button>
-</div>
-</div>
-
-</div>
   <div id="sessionChecklist">
     <h3>Today's Tasks</h3>
     <form id="newTaskForm">
@@ -76,140 +59,38 @@
     <ul id="checklist"></ul>
     <button id="clearCompleted">Clear Completed</button>
   </div>
-
   <div id="writingGoals" style="display: none;">
     <h3>Word Count Tracker</h3>
     <div id="wordCountInputs"></div>
     <div id="wordChart"></div>
   </div>
-</div>
-
-  <!-- Game Canvas Container (hidden by default) -->
-<div id="catGameContainer" style="display: none;">
-  <canvas id="catGameCanvas" width="800" height="200"></canvas>
-  <div id="gameStats"></div>
-</div>
-
-<!-- Play Game Button -->
-<button id="playGameButton" style="position: fixed; bottom: 10px; right: 10px; display: none;">🎮 Play Mini Game</button>
-
-<style>
-  .cycleDot.filled {
-    background-color: white;
-  }
-</style>
-
-
-  <!-- Motivation + Countdown -->
+  <div id="catGameContainer" style="display: none;">
+    <canvas id="catGameCanvas" width="800" height="200"></canvas>
+    <div id="gameStats"></div>
+  </div>
+  <button id="playGameButton" style="position: fixed; bottom: 10px; right: 10px; display: none;">🎮 Play Mini Game</button>
+  <style>
+    .cycleDot.filled {
+      background-color: white;
+    }
+  </style>
   <div id="motivationBar">
     <p id="motivationMessage">You've got this!</p>
     <p id="countdown"></p>
   </div>
-
-<!-- Level Up Animation -->
-<div id="levelUpOverlay" style="display: none;"></div>
-<div id="levelUpAnimation" class="level-up hidden">
-  <div id="levelUpAnimation" class="hidden">🎉 Level Up! 🎉</div>
-  <div class="level-up-subtext" id="levelUpReward"></div>
-</div>
-<audio id="levelUpSound" src="assets/level_up.mp3"></audio>
-
-<style>
-  .level-up {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(255, 255, 255, 0.85);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    z-index: 9999;
-    pointer-events: none;
-    animation: fadeOut 3s ease forwards;
-  }
-
-  .level-up.hidden {
-    display: none;
-  }
-
-  .level-up-text {
-    font-size: 3em;
-    font-weight: bold;
-    color: #f39c12;
-    animation: popUp 0.5s ease;
-  }
-
-  .level-up-subtext {
-    font-size: 1.5em;
-    margin-top: 0.5em;
-    color: #333;
-  }
-
-  @keyframes fadeOut {
-    0% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { opacity: 0; display: none; }
-  }
-
-  @keyframes popUp {
-    0% { transform: scale(0.5); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-  }
-</style>
-
-<script>
-let userXP = 0;
-let userLevel = 1;
-let userCoins = 0;
-
-function xpForLevel(level) {
-  return Math.floor(100 * Math.pow(1.25, level - 1));
-}
-
-function gainXP(amount) {
-  userXP += amount;
-  let nextLevelXP = xpForLevel(userLevel);
-
-  while (userXP >= nextLevelXP) {
-    userXP -= nextLevelXP;
-    userLevel++;
-    const coinsEarned = 10 + (2 * userLevel);
-    userCoins += coinsEarned;
-    showLevelUp(coinsEarned);
-    nextLevelXP = xpForLevel(userLevel);
-  }
-
-  updateLevelDisplay();
-}
-
-function showLevelUp(coinsEarned) {
-  const levelUpDiv = document.getElementById("levelUpAnimation");
-  const rewardText = document.getElementById("levelUpReward");
-  rewardText.textContent = `Level ${userLevel} unlocked! +${coinsEarned} coins!`;
-  levelUpDiv.classList.remove("hidden");
-  levelUpSound.play();
-
-  setTimeout(() => {
-    levelUpDiv.classList.add("hidden");
-  }, 3000);
-}
-
-function updateLevelDisplay() {
-  const display = document.getElementById("levelDisplay");
-  if (display) display.textContent = `Level: ${userLevel} | XP: ${userXP}/${xpForLevel(userLevel)}`;
-}
-</script>
-
-<div id="levelDisplay" style="position: absolute; top: 10px; right: 10px; font-weight: bold; font-size: 1.2em;"></div>
-
+  <div id="levelUpOverlay" style="display: none;"></div>
+  <div id="levelUpAnimation" class="level-up hidden">
+    <div id="levelUpAnimation" class="hidden">🎉 Level Up! 🎉</div>
+    <div class="level-up-subtext" id="levelUpReward"></div>
+  </div>
+  <audio id="levelUpSound" src="assets/level_up.mp3"></audio>
+  <div id="levelDisplay" style="position: absolute; top: 10px; right: 10px; font-weight: bold; font-size: 1.2em;"></div>
   <script src="script.js"></script>
-</div>
-<div id="bottomLeftPanel" class="hidden">
-  <div id="timeTrackerDisplay"></div>
-</div>
+  <div id="bottomLeftPanel" class="hidden">
+    <div id="timeTrackerDisplay"></div>
+  </div>
 </body>
 </html>
+
+
 
