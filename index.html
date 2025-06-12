@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  
+  <div id="mainWrapper" style="display: flex; justify-content: center; align-items: flex-start;">
   <div id="mainPanel" style="position: relative;">
     <div id="cycleContainer" style="position: absolute; top: 5px; left: 5px; display: flex; gap: 5px;">
       <div class="cycleDot"></div>
@@ -38,19 +40,7 @@
         <option value="editing">Editing</option>
       </select>
       <p id="modeReminder">Focus on cleaning your data!</p>
-    </div>
-    <div id="topRightControls">
-      <button id="toggleModeButton">🔁 Toggle Break/Work</button>
-      <button id="toggleTimeStats">📊 View Time Spent</button>
-      <div id="moodPrompt" class="mood-tracker-side" style="display:none;">
-        <p>All things considered, how happy are you right now?</p>
-        <button class="mood">🙂</button>
-        <button class="mood">😐</button>
-        <button class="mood">🙁</button>
-      </div>
-    </div>
-  </div>
-  <div id="sessionChecklist">
+        <div id="sessionChecklist">
     <h3>Today's Tasks</h3>
     <form id="newTaskForm">
       <input type="text" id="newTaskInput" placeholder="Add a new task..." required />
@@ -58,6 +48,17 @@
     </form>
     <ul id="checklist"></ul>
     <button id="clearCompleted">Clear Completed</button>
+  </div>
+   </div>
+</div>
+<div id="scratchNotes" class="hidden">
+    <textarea id="notesArea" placeholder="Jot down ideas or reminders..."></textarea>
+  </div>
+    <div id="topRightControls">
+      <button id="toggleModeButton">🔁 Toggle Break/Work</button>
+      <button id="toggleTimeStats">📊 View Time Spent</button>
+      <button id="toggleNotesBtn">📝 Notes</button>
+    </div>
   </div>
   <div id="writingGoals" style="display: none;">
     <h3>Word Count Tracker</h3>

@@ -16,14 +16,52 @@ h1, h3 {
   color: #fbc531;
 }
 
+#mainWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 40px;
+  flex-wrap: nowrap;
+}
+
 #mainPanel {
   max-width: 600px;
-  margin: 55px auto 0 auto; 
+  width: 100%;
   background-color: rgba(0, 0, 0, 0.6);
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 0 8px #000;
+  box-sizing: border-box;
 }
+
+#scratchNotes {
+  width: 250px;
+  min-height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fbc531;
+  border: 2px solid #fbc531;
+  border-radius: 10px;
+  padding: 12px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  box-sizing: border-box;
+}
+
+#notesArea {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  background-color: #000;
+  color: #fbc531;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  border: 1px solid #fbc531;
+  padding: 8px;
+  resize: vertical;
+}
+
+
 
 .modeGroup {
   margin-top: 0px;
@@ -152,16 +190,23 @@ select {
   image-rendering: pixelated;
 }
 
-#sessionChecklist {
-  margin-top: 30px;
-  color: #fbc531;
-  text-align: left;
-  display: inline-block;
-  font-size: 10px;
-  max-width: 350px;
+#mainPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+#sessionChecklist {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 10px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+
 #newTaskForm {
+  margin-left: 50px;
   margin-bottom: 10px;
   display: flex;
 }
@@ -229,7 +274,8 @@ select {
   font-family: 'Press Start 2P', cursive;
   font-size: 10px;
   padding: 4px;
-  width: 200px;
+  width: 300px;
+  max-width: 80%;
   background-color: #000;
   border: 1px solid #fbc531;
   color: #fbc531;
@@ -238,8 +284,8 @@ select {
 #newTaskForm button {
   font-family: 'Press Start 2P', cursive;
   font-size: 10px;
-  padding: 4px 8px;
-  margin-left: 4px;
+  padding: 6px 12px;
+  margin-left: 6px;
   background-color: #fbc531;
   border: none;
   color: #000;
@@ -406,6 +452,34 @@ select {
   z-index: 999;
 }
 
+#toggleNotesBtn {
+  margin-top: 10px;
+  font-size: 10px;
+  font-family: 'Press Start 2P', cursive;
+  background-color: #fbc531;
+  border: none;
+  color: #000;
+  padding: 6px 12px;
+  cursor: pointer;
+}
 
-
-
+#notesPanel {
+  position: absolute;
+  top: 55px;
+  left: 50%;
+  transform: translateX(330px);
+  width: 250px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fbc531;
+  border: 2px solid #fbc531;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 10px;
+  font-family: 'Press Start 2P', cursive;
+  z-index: 900;
+}
+@media (max-width: 900px) {
+  #scratchNotes {
+    display: none !important;
+  }
+}

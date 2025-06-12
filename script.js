@@ -377,7 +377,6 @@ function updateWordProgress() {
     container.appendChild(row);
   });
 
-  document.getElementById("moodPrompt").style.display = isWorking ? "none" : "block";
   // Progress bar
   const barWrapper = document.createElement("div");
   barWrapper.style.marginTop = "10px";
@@ -698,8 +697,6 @@ function updateStreak() {
   updateXPDisplay();
 }
 
-
-
 function updateStatsDisplay() {
   const statsDisplay = document.getElementById("gameStats");
   if (statsDisplay) {
@@ -744,34 +741,39 @@ window.addEventListener("DOMContentLoaded", () => {
   setTimeout(updateCatMessage, 5000);
 });
 
-document.querySelectorAll(".mood").forEach(btn => {
-  btn.addEventListener("click", () => {
-    let moodMessage = "Hope your day gets better!";
-    if (btn.textContent === "🙂") moodMessage = "Glad to hear you're doing well! You've been doing a great job!";
-    if (btn.textContent === "😐") moodMessage = "Steady progress is still progress!";
-    if (btn.textContent === "🙁") moodMessage = "Sending you encouragement – you’ve got this! Consider taking a break if you're really not feeling well.";
-
-    const speech = document.getElementById("catSpeech");
-    speech.textContent = moodMessage;
-    speech.style.display = "block";
-
-    setTimeout(() => {
-      speech.style.display = "none";
-    }, 10000); // Hide speech after 10 seconds
-
-    const moodBox = document.getElementById("moodPrompt");
-    if (moodBox) {
-      setTimeout(() => {
-        moodBox.style.display = "none";
-      }, 10000); // Also hide the mood box after 10 seconds
-    }
-  });
-});
 
 window.addEventListener("DOMContentLoaded", () => {
   updateStreak(); // check on load
 });
 
+const notesToggleBtn = document.getElementById("toggleNotesBtn");
+const scratchNotesDiv = document.getElementById("scratchNotes");
+const notesArea = document.getElementById("notesArea");
+
+if (notesToggleBtn && scratchNotesDiv && notesArea) {
+  notesToggleBtn.addEventListener("click", () => {
+    scratchNotesDiv.classList.toggle("hidden");
+    notesToggleBtn.textContent = scratchNotesDiv.classList.contains("hidden") ? "📝 Notes" : "❌ Hide Notes";
+  });
+
+  notesArea.value = localStorage.getItem("pomocatNotes") || "";
+  notesArea.addEventListener("input", () => {
+    localStorage.setItem("pomocatNotes", notesArea.value);
+  });
+}
+
+// Auto-load saved notes
+function loadScratchNotes() {
+  const savedNotes = localStorage.getItem("pomocatNotes");
+  if (savedNotes) {
+    document.getElementById("notesArea").value = savedNotes;
+  }
+}
+
+// Save notes on input
+document.getElementById("notesArea").addEventListener("input", () => {
+  localStorage.setItem("pomocatNotes", document.getElementById("notesArea").value);
+});
 
 
 document.addEventListener("DOMContentLoaded", () => {
