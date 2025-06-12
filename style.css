@@ -315,11 +315,18 @@ select {
 #checklist li span {
   font-size: 10px;
   font-family: 'Press Start 2P', cursive;
-  padding-left: 4px;
-  padding-right: 4px;
   display: inline-block;
-  width: 90%;
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: auto;
+  white-space: normal;
+  word-break: break-word;
+  min-width: 0;
+  text-align: left;
+  padding-right: 10px;
+  padding-left: 4px;
   overflow-wrap: break-word;
+  white-space: normal;
 }
 
 #checklist li {
@@ -331,8 +338,8 @@ select {
   border-radius: 6px;
   display: flex;
   align-items: center;
-  width: 300px; /* 👈 match input width */
-  max-width: 90%;
+  width: 100%;
+  max-width: 800px;
   box-sizing: border-box;
 }
 

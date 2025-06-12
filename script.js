@@ -119,6 +119,7 @@ function populateSettingsForm() {
 // Toggle panel
 document.getElementById("toggleSettingsBtn").addEventListener("click", () => {
   document.getElementById("settingsPanel").classList.remove("hidden");
+  populateSettingsForm();
   refreshTaskModeDropdown();
 renderWordCountInputs();
 
@@ -279,7 +280,7 @@ function checkLevelUp() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  // 1. Ensure panels are hidden and listeners are set up for closing them FIRST.
+
   const settingsPanel = document.getElementById("settingsPanel");
   if (settingsPanel) {
     settingsPanel.classList.add("hidden"); // Ensure it starts hidden
@@ -308,10 +309,6 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 2. Call populateSettingsForm when opening the panel
-  // (This is already done correctly in your toggleSettingsBtn listener)
-
-  // 3. Move ALL your initial setup calls here
   loadStats();
   updateStreak();
   updateTimeTrackerDisplay();
@@ -322,8 +319,8 @@ window.addEventListener("DOMContentLoaded", () => {
   renderTasks();
   loadScratchNotes();
   setTimeout(updateCatMessage, 5000);
+  populateSettingsForm();
 
-  // 4. Other button listeners that should be active from the start
   document.getElementById("toggleModeButton").addEventListener("click", () => {
     clearInterval(intervalID);
     timerRunning = false;
