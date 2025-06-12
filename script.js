@@ -35,7 +35,30 @@ let settings = {
   }
 };
 
+// Save to localStorage
+function saveSettings() {
+  localStorage.setItem("pomocatSettings", JSON.stringify(settings));
+}
+
+// Load saved settings
+function loadSettings() {
+  const stored = localStorage.getItem("pomocatSettings");
+  if (stored) {
+    settings = JSON.parse(stored);
+  } else {
+    saveSettings();
+  }
+}
+
 loadSettings();
+
+saveSettings(); 
+
+// Fallbacks in case user has bad or missing settings in storage
+if (!settings.WORK_DURATION || isNaN(settings.WORK_DURATION)) settings.WORK_DURATION = 25;
+if (!settings.BREAK_DURATION || isNaN(settings.BREAK_DURATION)) settings.BREAK_DURATION = 5;
+if (!settings.LONG_BREAK_DURATION || isNaN(settings.LONG_BREAK_DURATION)) settings.LONG_BREAK_DURATION = 15;
+
 
 let isWorking = true;
 let timeRemaining = settings.WORK_DURATION * 60;
@@ -50,19 +73,6 @@ let dailyStreak = parseInt(localStorage.getItem("dailyStreak") || "0");
 // Audio
 const workSound = new Audio("assets/work_start.mp3");
 const breakSound = new Audio("assets/break_start.mp3");
-
-// Load saved settings
-function loadSettings() {
-  const stored = localStorage.getItem("pomocatSettings");
-  if (stored) {
-    settings = JSON.parse(stored);
-  }
-}
-
-// Save to localStorage
-function saveSettings() {
-  localStorage.setItem("pomocatSettings", JSON.stringify(settings));
-}
 
 // Populate settings form
 function populateSettingsForm() {
@@ -338,16 +348,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
 
   // Button listeners
-  document.getElementById("toggleModeButton").addEventListener("click", () => {
-    clearInterval(intervalID);
-    timerRunning = false;
-    isPaused = false;
-    startButton.disabled = false;
-
-    switchMode();
-    updateDisplay();
-  });
-
   document.getElementById("toggleTimeStats").addEventListener("click", () => {
     const timeStatsDiv = document.getElementById("bottomLeftPanel");
     const toggleBtn = document.getElementById("toggleTimeStats");
@@ -482,23 +482,25 @@ document.getElementById("playGameButton").addEventListener("click", () => {
 function switchMode() {
   isWorking = !isWorking;
 
-  if (isWorking) {
-    timeRemaining = settings.WORK_DURATION * 60;
-    stopCatGame();
-    document.getElementById("playGameButton").style.display = "none";
-    workSound.play();
-  } else {
-    completeWorkSession();
-    timeRemaining = (sessionCount > 0 && sessionCount % 4 === 0)
+  timeRemaining = isWorking
+    ? settings.WORK_DURATION * 60
+    : (sessionCount > 0 && sessionCount % 4 === 0)
       ? settings.LONG_BREAK_DURATION * 60
       : settings.BREAK_DURATION * 60;
-    document.getElementById("playGameButton").style.display = "block";
-    breakSound.play();
-  }
 
   updateCatImage();
   updateButtonLabel();
+  updateDisplay();
+
+  if (!isWorking) {
+    document.getElementById("playGameButton").style.display = "block";
+    breakSound.play();
+  } else {
+    document.getElementById("playGameButton").style.display = "none";
+    workSound.play();
+  }
 }
+
 
 function logPomodoro(minutes = 25) {
   stats.totalMinutes += minutes;
