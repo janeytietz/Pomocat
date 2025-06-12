@@ -11,13 +11,34 @@ const taskForm = document.getElementById("newTaskForm");
 const taskInput = document.getElementById("newTaskInput");
 const clearCompletedBtn = document.getElementById("clearCompleted");
 
-// Pomodoro config
-const WORK_DURATION = 25 * 60;
-const BREAK_DURATION = 5 * 60;
-const LONG_BREAK_DURATION = 15 * 60;
+
+// Defaults
+let settings = {
+  WORK_DURATION: 25,
+  BREAK_DURATION: 5,
+  LONG_BREAK_DURATION: 15,
+  modeLabels: {
+    life_admin: "Life Admin",
+    lit_review: "Literature Review",
+    cleaning: "Data Cleaning",
+    analysis: "Analysis",
+    writing: "Writing",
+    editing: "Editing"
+  },
+  writingGoals: {
+    Introduction: 500,
+    "Literature Review": 2500,
+    Methodology: 2000,
+    Results: 3000,
+    Discussion: 1500,
+    Conclusion: 500
+  }
+};
+
+loadSettings();
 
 let isWorking = true;
-let timeRemaining = WORK_DURATION;
+let timeRemaining = settings.WORK_DURATION * 60;
 let timerRunning = false;
 let intervalID = null;
 let sessionCount = 0;
@@ -29,6 +50,99 @@ let dailyStreak = parseInt(localStorage.getItem("dailyStreak") || "0");
 // Audio
 const workSound = new Audio("assets/work_start.mp3");
 const breakSound = new Audio("assets/break_start.mp3");
+
+// Load saved settings
+function loadSettings() {
+  const stored = localStorage.getItem("pomocatSettings");
+  if (stored) {
+    settings = JSON.parse(stored);
+  }
+}
+
+// Save to localStorage
+function saveSettings() {
+  localStorage.setItem("pomocatSettings", JSON.stringify(settings));
+}
+
+// Populate settings form
+function populateSettingsForm() {
+  // Pomodoro durations
+  document.getElementById("settingWork").value = settings.WORK_DURATION;
+  document.getElementById("settingBreak").value = settings.BREAK_DURATION;
+  document.getElementById("settingLongBreak").value = settings.LONG_BREAK_DURATION;
+
+  // Mode renaming
+  const modeFields = document.getElementById("modeRenameFields");
+  modeFields.innerHTML = "";
+  Object.entries(settings.modeLabels).forEach(([key, label]) => {
+    const container = document.createElement("div");
+    container.className = "setting-row";
+
+    const modeLabel = document.createElement("label");
+    modeLabel.textContent = `${key.replace("_", " ")}: `;
+    modeLabel.htmlFor = `modeInput-${key}`;
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.id = `modeInput-${key}`;
+    input.value = label;
+    input.dataset.key = key;
+
+    container.appendChild(modeLabel);
+    container.appendChild(input);
+    modeFields.appendChild(container);
+  });
+
+  // Writing goals
+  const writingFields = document.getElementById("writingGoalFields");
+  writingFields.innerHTML = "";
+  Object.entries(settings.writingGoals).forEach(([section, target]) => {
+    const container = document.createElement("div");
+    container.className = "setting-row";
+
+    const label = document.createElement("label");
+    label.textContent = `${section}: `;
+    label.htmlFor = `wordInput-${section}`;
+
+    const input = document.createElement("input");
+    input.type = "number";
+    input.id = `wordInput-${section}`;
+    input.value = target;
+    input.dataset.section = section;
+
+    container.appendChild(label);
+    container.appendChild(input);
+    writingFields.appendChild(container);
+  });
+}
+
+// Toggle panel
+document.getElementById("toggleSettingsBtn").addEventListener("click", () => {
+  document.getElementById("settingsPanel").classList.remove("hidden");
+  refreshTaskModeDropdown();
+renderWordCountInputs();
+
+});
+
+// Save changes from form
+document.getElementById("saveSettingsBtn").addEventListener("click", () => {
+  settings.WORK_DURATION = parseInt(document.getElementById("settingWork").value);
+  settings.BREAK_DURATION = parseInt(document.getElementById("settingBreak").value);
+  settings.LONG_BREAK_DURATION = parseInt(document.getElementById("settingLongBreak").value);
+
+  document.querySelectorAll("#modeRenameFields input").forEach(input => {
+    settings.modeLabels[input.dataset.key] = input.value;
+  });
+
+  document.querySelectorAll("#writingGoalFields input").forEach(input => {
+    settings.writingGoals[input.dataset.section] = parseInt(input.value);
+  });
+
+  saveSettings();
+refreshTaskModeDropdown();
+renderWordCountInputs();
+alert("Settings saved! Refresh to apply.");
+});
 
 // Dissertation countdown
 function updateCountdown() {
@@ -44,8 +158,10 @@ setInterval(updateCountdown, 1000 * 60 * 60);
 
 function updateCycleIndicator() {
   const dots = document.querySelectorAll(".cycleDot");
+  const count = sessionCount % 4;
+
   dots.forEach((dot, index) => {
-    if (index < sessionCount % 4) {
+    if (index < count) {
       dot.classList.add("filled");
     } else {
       dot.classList.remove("filled");
@@ -114,18 +230,19 @@ function startTimer() {
 
 
     if (timeRemaining <= 0) {
-      clearInterval(intervalID);
-      timerRunning = false;
-      startButton.textContent = "Start Work";
-      if (isWorking) {
-        completeWorkSession();
-      } else {
-        sessionCount++;
-      }
-      switchMode();
-      updateDisplay();
-      startButton.disabled = false;
-    }
+  clearInterval(intervalID);
+  timerRunning = false;
+  startButton.textContent = "Start Work";
+  
+  if (isWorking) {
+    completeWorkSession();
+  }
+
+  switchMode();
+  updateDisplay();
+  startButton.disabled = false;
+}
+
   }, 1000);
 }
 
@@ -162,7 +279,39 @@ function checkLevelUp() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  // Existing setup
+  // 1. Ensure panels are hidden and listeners are set up for closing them FIRST.
+  const settingsPanel = document.getElementById("settingsPanel");
+  if (settingsPanel) {
+    settingsPanel.classList.add("hidden"); // Ensure it starts hidden
+  }
+
+  const closeSettingsBtn = document.getElementById("closeSettingsBtn");
+  if (closeSettingsBtn) {
+    closeSettingsBtn.addEventListener("click", () => {
+      if (settingsPanel) { // Check again for safety
+        settingsPanel.classList.add("hidden");
+      }
+    });
+  }
+
+  const timeStatsDiv = document.getElementById("bottomLeftPanel");
+  const toggleTimeStatsBtn = document.getElementById("toggleTimeStats"); // Renamed to avoid confusion
+  if (timeStatsDiv) { // Ensure time stats panel is hidden on load too
+    timeStatsDiv.classList.add("hidden");
+  }
+  if (toggleTimeStatsBtn && timeStatsDiv) {
+    toggleTimeStatsBtn.addEventListener("click", () => {
+      timeStatsDiv.classList.toggle("hidden");
+      toggleTimeStatsBtn.textContent = timeStatsDiv.classList.contains("hidden")
+        ? "📊 View Time Spent"
+        : "📉 Hide Time Spent";
+    });
+  }
+
+  // 2. Call populateSettingsForm when opening the panel
+  // (This is already done correctly in your toggleSettingsBtn listener)
+
+  // 3. Move ALL your initial setup calls here
   loadStats();
   updateStreak();
   updateTimeTrackerDisplay();
@@ -171,6 +320,25 @@ window.addEventListener("DOMContentLoaded", () => {
   updateCatImage();
   updateButtonLabel();
   renderTasks();
+  loadScratchNotes();
+  setTimeout(updateCatMessage, 5000);
+
+  // 4. Other button listeners that should be active from the start
+  document.getElementById("toggleModeButton").addEventListener("click", () => {
+    clearInterval(intervalID);
+    timerRunning = false;
+    isPaused = false;
+    startButton.disabled = false;
+    switchMode();
+    updateDisplay();
+  });
+
+  document.getElementById("startButton").addEventListener("click", toggleTimer);
+  document.getElementById("playGameButton").addEventListener("click", () => {
+    if (!gameRunning) startCatGame();
+  });
+});
+
 
   // Button listeners
   document.getElementById("toggleModeButton").addEventListener("click", () => {
@@ -211,7 +379,7 @@ document.getElementById("startButton").addEventListener("click", toggleTimer);
   document.getElementById("playGameButton").addEventListener("click", () => {
     if (!gameRunning) startCatGame();
   });
-});
+;
 
 
 let gameInterval;
@@ -318,22 +486,21 @@ function switchMode() {
   isWorking = !isWorking;
 
   if (isWorking) {
-    timeRemaining = WORK_DURATION;
+    timeRemaining = settings.WORK_DURATION * 60;
     stopCatGame();
     document.getElementById("playGameButton").style.display = "none";
     workSound.play();
   } else {
     completeWorkSession();
     timeRemaining = (sessionCount > 0 && sessionCount % 4 === 0)
-      ? LONG_BREAK_DURATION
-      : BREAK_DURATION;
+      ? settings.LONG_BREAK_DURATION * 60
+      : settings.BREAK_DURATION * 60;
     document.getElementById("playGameButton").style.display = "block";
     breakSound.play();
   }
 
   updateCatImage();
   updateButtonLabel();
-  updateCycleIndicator();
 }
 
 function logPomodoro(minutes = 25) {
@@ -475,7 +642,7 @@ function updateTimeTrackerDisplay() {
 function renderWordCountInputs() {
   wordCountInputsDiv.innerHTML = "";
 
-  Object.entries(writingGoals).forEach(([section, goal]) => {
+  Object.entries(settings.writingGoals).forEach(([section, goal]) => {
     const container = document.createElement("div");
 
     const label = document.createElement("label");
@@ -502,7 +669,7 @@ function renderWordCountInputs() {
 
 taskModeSelect.addEventListener("change", () => {
   const mode = taskModeSelect.value;
-  modeReminder.textContent = reminders[mode];
+  modeReminder.textContent = settings.modeLabels[mode];
 
   if (mode === "writing" || mode == "editing") {
     writingGoalsDiv.style.display = "block";
@@ -512,6 +679,19 @@ taskModeSelect.addEventListener("change", () => {
     writingGoalsDiv.style.display = "none";
   }
 });
+
+function refreshTaskModeDropdown() {
+  const select = document.getElementById("taskMode");
+  select.innerHTML = "";
+
+  Object.entries(settings.modeLabels).forEach(([key, label]) => {
+    const option = document.createElement("option");
+    option.value = key;
+    option.textContent = label;
+    select.appendChild(option);
+  });
+}
+
 
 // Checklist logic
 let tasks = JSON.parse(localStorage.getItem("pomocatTasks")) || [];
@@ -737,15 +917,6 @@ function updateCatMessage() {
   }, nextDelay);
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  setTimeout(updateCatMessage, 5000);
-});
-
-
-window.addEventListener("DOMContentLoaded", () => {
-  updateStreak(); // check on load
-});
-
 const notesToggleBtn = document.getElementById("toggleNotesBtn");
 const scratchNotesDiv = document.getElementById("scratchNotes");
 const notesArea = document.getElementById("notesArea");
@@ -775,18 +946,6 @@ document.getElementById("notesArea").addEventListener("input", () => {
   localStorage.setItem("pomocatNotes", document.getElementById("notesArea").value);
 });
 
-
-document.addEventListener("DOMContentLoaded", () => {
-  const toggleBtn = document.getElementById("toggleTimeStats");
-  const timeStatsDiv = document.getElementById("bottomLeftPanel");
-
-  toggleBtn.addEventListener("click", () => {
-    timeStatsDiv.classList.toggle("hidden");
-    toggleBtn.textContent = timeStatsDiv.classList.contains("hidden")
-      ? "📊 View Time Spent"
-      : "📉 Hide Time Spent";
-  });
-});
 
 // Initial Setup
 updateCountdown();

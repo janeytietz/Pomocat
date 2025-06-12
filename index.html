@@ -10,88 +10,102 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  
+
   <div id="mainWrapper" style="display: flex; justify-content: center; align-items: flex-start;">
-  <div id="mainPanel" style="position: relative;">
-    <div id="cycleContainer" style="position: absolute; top: 5px; left: 5px; display: flex; gap: 5px;">
-      <div class="cycleDot"></div>
-      <div class="cycleDot"></div>
-      <div class="cycleDot"></div>
-      <div class="cycleDot"></div>
-    </div>
-    <div id="timer">25:00</div>
-    <button id="startButton">Start Work</button>
-    <div id="statusWrapper" class="xp-wrapper">
-      <div id="xpLevelDisplay" class="xp-display"> LVL 1 | XP: 0 / 20</div>
-      <div id="dailyStreakDisplay" class="xp-display">🔥 Streak: 0 days</div>
-    </div>
-    <div id="catWrapper" style="position: relative; display: inline-block;">
-      <img id="catImage" src="assets/cat_sleeping.gif" />
-      <div id="catSpeech" class="cat-speech" style="display: none;"></div>
-    </div>
-    <div class="modeGroup">
-      <label for="taskMode">What are you working on?</label>
-      <select id="taskMode">
-        <option value="life_admin">Life Admin</option>
-        <option value="lit_review">Literature Review</option>
-        <option value="cleaning">Data Cleaning</option>
-        <option value="analysis">Analysis</option>
-        <option value="writing">Writing</option>
-        <option value="editing">Editing</option>
-      </select>
-      <p id="modeReminder">Focus on cleaning your data!</p>
+    <div id="mainPanel" style="position: relative;">
+      <div id="cycleContainer" style="position: absolute; top: 5px; left: 5px; display: flex; gap: 5px;">
+        <div class="cycleDot"></div>
+        <div class="cycleDot"></div>
+        <div class="cycleDot"></div>
+        <div class="cycleDot"></div>
+      </div>
+      <div id="timer">25:00</div>
+      <button id="startButton">Start Work</button>
+      <div id="statusWrapper" class="xp-wrapper">
+        <div id="xpLevelDisplay" class="xp-display"> LVL 1 | XP: 0 / 20</div>
+        <div id="dailyStreakDisplay" class="xp-display">🔥 Streak: 0 days</div>
+      </div>
+      <div id="catWrapper" style="position: relative; display: inline-block;">
+        <img id="catImage" src="assets/cat_sleeping.gif" />
+        <div id="catSpeech" class="cat-speech" style="display: none;"></div>
+      </div>
+      <div class="modeGroup">
+        <label for="taskMode">What are you working on?</label>
+        <select id="taskMode">
+          <option value="life_admin">Life Admin</option>
+          <option value="lit_review">Literature Review</option>
+          <option value="cleaning">Data Cleaning</option>
+          <option value="analysis">Analysis</option>
+          <option value="writing">Writing</option>
+          <option value="editing">Editing</option>
+        </select>
+        <p id="modeReminder">Focus on cleaning your data!</p>
         <div id="sessionChecklist">
-    <h3>Today's Tasks</h3>
-    <form id="newTaskForm">
-      <input type="text" id="newTaskInput" placeholder="Add a new task..." required />
-      <button type="submit">+</button>
-    </form>
-    <ul id="checklist"></ul>
-    <button id="clearCompleted">Clear Completed</button>
-  </div>
-   </div>
-</div>
-<div id="scratchNotes" class="hidden">
-    <textarea id="notesArea" placeholder="Jot down ideas or reminders..."></textarea>
-  </div>
-    <div id="topRightControls">
-      <button id="toggleModeButton">🔁 Toggle Break/Work</button>
-      <button id="toggleTimeStats">📊 View Time Spent</button>
-      <button id="toggleNotesBtn">📝 Notes</button>
+          <h3>Today's Tasks</h3>
+          <form id="newTaskForm">
+            <input type="text" id="newTaskInput" placeholder="Add a new task..." required />
+            <button type="submit">+</button>
+          </form>
+          <ul id="checklist"></ul>
+          <button id="clearCompleted">Clear Completed</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="scratchNotes" class="hidden">
+      <textarea id="notesArea" placeholder="Jot down ideas or reminders..."></textarea>
+    </div>
+
+    <div id="settingsPanel" class="hidden">
+      <h3>Settings</h3>
+      <label>Work Duration (mins.): <input type="number" id="settingWork" min="5" /></label><br>
+      <label>Short Break Duration (mins.): <input type="number" id="settingBreak" min="1" /></label><br>
+      <label>Long Break Duration (mins.): <input type="number" id="settingLongBreak" min="1" /></label><br>
+      <label>Rename Modes:</label>
+      <div id="modeRenameFields"></div>
+      <label>Section Word Targets:</label>
+      <div id="writingGoalFields"></div>
+      <button id="saveSettingsBtn">📀 Save Settings</button>
+      <button id="closeSettingsBtn" style="align-self: flex-end;">❌ Close</button>
     </div>
   </div>
+
+  <div id="topRightControls">
+    <button id="toggleModeButton">🔁 Toggle Break/Work</button>
+    <button id="toggleTimeStats">📊 View Time Spent</button>
+    <button id="toggleNotesBtn">📝 Notes</button>
+    <button id="toggleSettingsBtn">⚙️ Settings</button>
+  </div>
+
   <div id="writingGoals" style="display: none;">
     <h3>Word Count Tracker</h3>
     <div id="wordCountInputs"></div>
     <div id="wordChart"></div>
   </div>
+
   <div id="catGameContainer" style="display: none;">
     <canvas id="catGameCanvas" width="800" height="200"></canvas>
     <div id="gameStats"></div>
   </div>
+
   <button id="playGameButton" style="position: fixed; bottom: 10px; right: 10px; display: none;">🎮 Play Mini Game</button>
-  <style>
-    .cycleDot.filled {
-      background-color: white;
-    }
-  </style>
+
   <div id="motivationBar">
     <p id="motivationMessage">You've got this!</p>
     <p id="countdown"></p>
   </div>
+
   <div id="levelUpOverlay" style="display: none;"></div>
   <div id="levelUpAnimation" class="level-up hidden">
-    <div id="levelUpAnimation" class="hidden">🎉 Level Up! 🎉</div>
+    <div>🎉 Level Up! 🎉</div>
     <div class="level-up-subtext" id="levelUpReward"></div>
   </div>
+
   <audio id="levelUpSound" src="assets/level_up.mp3"></audio>
   <div id="levelDisplay" style="position: absolute; top: 10px; right: 10px; font-weight: bold; font-size: 1.2em;"></div>
-  <script src="script.js"></script>
   <div id="bottomLeftPanel" class="hidden">
     <div id="timeTrackerDisplay"></div>
   </div>
+  <script src="script.js"></script>
 </body>
 </html>
-
-
-

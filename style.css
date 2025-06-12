@@ -206,7 +206,7 @@ select {
 
 
 #newTaskForm {
-  margin-left: 50px;
+  margin-left: 3px;
   margin-bottom: 10px;
   display: flex;
 }
@@ -306,29 +306,46 @@ select {
 #checklist {
   list-style-type: none;
   padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+#checklist li span {
+  font-size: 10px;
+  font-family: 'Press Start 2P', cursive;
+  padding-left: 4px;
+  padding-right: 4px;
+  display: inline-block;
+  width: 90%;
+  overflow-wrap: break-word;
 }
 
 #checklist li {
-  font-size: 1.1em;
-  padding: 10px;
-  margin-bottom: 8px;
+  font-size: 10px;
+  font-family: 'Press Start 2P', cursive;
+  padding: 6px 10px;
+  margin-bottom: 6px;
   background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  border-radius: 6px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  width: 300px; /* 👈 match input width */
+  max-width: 90%;
+  box-sizing: border-box;
 }
 
 #checklist input[type="checkbox"] {
-  transform: scale(1.2);
-  margin-right: 8px;
+  margin-right: 10px;
 }
 
 #checklist span {
   flex-grow: 1;
-  font-size: 10px;
-  font-family: 'Press Start 2P', cursive;
+  text-align: left;
+  padding-right: 4px;
 }
+
 
 #checklist .delete-button {
   margin-left: 10px;
@@ -482,4 +499,113 @@ select {
   #scratchNotes {
     display: none !important;
   }
+}
+
+#settingsPanel {
+  margin: 0 auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #111;
+  color: #fbc531;
+  z-index: 1000;
+  padding: 2rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Press Start 2P', cursive;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#settingsPanel h3 {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #fbc531;
+  margin-bottom: 1rem;
+}
+
+#settingsPanel label {
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+  display: block;
+  color: #fbc531;
+}
+
+#settingsPanel input {
+  background: #000;
+  color: #fbc531;
+  border: 1px solid #fbc531;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 10px;
+  padding: 6px;
+  margin-bottom: 10px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 10px;
+  max-width: 400px;
+  width: 100%;
+}
+
+.setting-row label {
+  flex: 1;
+  text-align: right;
+  padding-right: 10px;
+}
+
+.setting-row input {
+  flex: 0 0 100px;
+}
+
+#modeRenameFields,
+#writingGoalFields {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+}
+
+#saveSettingsBtn {
+  background-color: #fbc531;
+  color: #000;
+  border: none;
+  font-family: 'Press Start 2P', cursive;
+  padding: 8px 14px;
+  margin-top: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  align-self: center;
+  width: fit-content;
+}
+
+#closeSettingsBtn {
+  background-color: #f25c5c;
+  position: absolute;
+  top: 20px;
+  right: 85px;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-family: 'Press Start 2P', cursive;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+#saveSettingsBtn:hover,
+#closeSettingsBtn:hover {
+  background-color: #e0b93c;
+}
+
+#saveSettingsBtn:hover,
+#closeSettingsBtn:hover {
+  background-color: #e0b93c;
 }
