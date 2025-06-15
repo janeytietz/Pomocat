@@ -689,8 +689,24 @@ function refreshTaskModeDropdown() {
     option.textContent = label;
     select.appendChild(option);
   });
+
+  const currentMode = select.value;
+  modeReminder.textContent = reminders[currentMode] || settings.modeLabels[currentMode];
 }
 
+taskModeSelect.addEventListener("change", () => {
+  const mode = taskModeSelect.value;
+  // Use the 'reminders' object for the display text
+  modeReminder.textContent = reminders[mode] || settings.modeLabels[mode];
+
+  if (mode === "writing" || mode == "editing") {
+    writingGoalsDiv.style.display = "block";
+    renderWordCountInputs();
+    updateWordProgress();
+  } else {
+    writingGoalsDiv.style.display = "none";
+  }
+});
 
 // Checklist logic
 let tasks = JSON.parse(localStorage.getItem("pomocatTasks")) || [];
